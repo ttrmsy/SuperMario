@@ -50,10 +50,7 @@ void Application::Run()
 		//フレームレートの制御
 		UpdateDeLtaTime();
 
-		scene->Update(delta_second);
-		
-		
-		
+		scene->Update(delta_second);		
 	}
 
 	Shutdown();
