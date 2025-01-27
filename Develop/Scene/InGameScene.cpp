@@ -19,6 +19,9 @@
 
 void InGameScene::Initialize()
 {
+	//BGM‚Ìƒ‹[ƒvÄ¶
+	PlayMusic("Resource/Sounds/BGM_MarioGround.wav", DX_PLAYTYPE_LOOP);
+
 	p = nullptr;
 	objm = GameObjectManager::GetInstance();
 
@@ -51,6 +54,8 @@ void InGameScene::Initialize()
 
 eSceneType InGameScene::Update(float delta_second)
 {
+
+
 	objm->HitCheck();
 
 	__super::Update(delta_second);
@@ -60,7 +65,6 @@ eSceneType InGameScene::Update(float delta_second)
 	DeleteObject();
 
 	Draw();
-	
 
 	return GetNowSceneType();
 }
