@@ -19,11 +19,27 @@ void WalkingState::Initialize()
 	//“ü—Íî•ñ
 	input = InputManager::GetInstance();
 
-	/*float x = player->Get_Velocity().x;
-	if (x > 0 || x < 0)
+	float x = player->Get_Velocity().x;
+	/*if (input->GetKeyState(KEY_INPUT_A) == eInputState::Pressed)
 	{
-		speed = x;
+		if (x <= 0)
+		{
+			speed = x;
+		}
+	}
+
+	if (input->GetKeyState(KEY_INPUT_D) == eInputState::Pressed)
+	{
+		if (x >= 0)
+		{
+			speed = x;
+		}
+		else
+		{
+			speed = 0;
+		}
 	}*/
+
 }
 
 void WalkingState::Update()
