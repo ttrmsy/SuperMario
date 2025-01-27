@@ -79,10 +79,12 @@ void WalkingState::Update()
 	}
 	
 	
-	if (input->GetKeyState(KEY_INPUT_SPACE) == eInputState::Pressed)
+	if (player->jump_flag == true)
 	{
-		speed = 0;
-		player->SetNextState(ePlayerState::jump);
+		if (input->GetKeyState(KEY_INPUT_SPACE) == eInputState::Pressed)
+		{
+			player->SetNextState(ePlayerState::jump);
+		}
 	}
 
 	
