@@ -30,10 +30,14 @@ void StoppedState::Update()
 		player->SetNextState(ePlayerState::walk);
 	}
 
-	if (input->GetKeyState(KEY_INPUT_SPACE) == eInputState::Pressed)
+	if (player->jump_flag == true)
 	{
-		player->SetNextState(ePlayerState::jump);
+		if (input->GetKeyState(KEY_INPUT_SPACE) == eInputState::Pressed)
+		{
+			player->SetNextState(ePlayerState::jump);
+		}
 	}
+	
 }
 
 void StoppedState::Draw() const
