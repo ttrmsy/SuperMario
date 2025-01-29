@@ -13,7 +13,6 @@ private:
 	int cloud_image[6];
 	int mountain_image[6];
 	Player* p;
-	int stage_count;
 	
 
 public:

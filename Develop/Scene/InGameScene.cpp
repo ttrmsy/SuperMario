@@ -1,4 +1,5 @@
 #include "InGameScene.h"
+#include "../Utility/InputManager.h"
 #include "../Utility/ResourceManager.h"
 #include "../Object/Player/Player.h"
 #include "../Utility/Collision.h"
@@ -53,6 +54,13 @@ eSceneType InGameScene::Update(float delta_second)
 {
 	objm->HitCheck();
 
+	InputManager* input = InputManager::GetInstance();
+
+	/*if (p->Get_DeathCount() >= 1)
+	{
+		return eSceneType::eResult;
+	}*/
+
 	__super::Update(delta_second);
 
 	camera->Update();
@@ -60,7 +68,6 @@ eSceneType InGameScene::Update(float delta_second)
 	DeleteObject();
 
 	Draw();
-	
 
 	return GetNowSceneType();
 }
@@ -147,7 +154,7 @@ void InGameScene::LoadStageMapCSV()
 		{
 			break;
 		}
-		//’Šo‚µ‚½•¶Žš‚ª'P'‚È‚çPlaeyr‚ð•`‰æ‚·‚é
+		//’Šo‚µ‚½•¶Žš‚ª'P'‚È‚çPlayer‚ð•`‰æ‚·‚é
 		else if (c == 'M')
 		{
 			p = objm->CreateGameObject<Player>(generate_location);
