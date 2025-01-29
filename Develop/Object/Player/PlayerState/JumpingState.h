@@ -6,6 +6,7 @@ private:
 	float g_velocity;
 	Vector2D j_velocity;
 	float Held_jump;
+	int count;
 
 public:
 	JumpingState(class Player* p);
