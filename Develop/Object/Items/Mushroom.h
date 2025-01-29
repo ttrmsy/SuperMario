@@ -1,13 +1,11 @@
 #pragma once
 #include "ItemBase.h"
 
-class Coin : public ItemBase
+class Mushroom : public ItemBase
 {
-private:
-
 public:
-	Coin();
-	~Coin();
+	Mushroom();
+	~Mushroom();
 
 	//‰Šú‰»ˆ—
 	virtual void Initialize() override;

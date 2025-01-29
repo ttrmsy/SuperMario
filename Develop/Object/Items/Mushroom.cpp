@@ -1,17 +1,17 @@
-#include "Coin.h"
+#include "Mushroom.h"
 #include "../../Utility/ResourceManager.h"
 
-Coin::Coin()
+Mushroom::Mushroom()
 {
 
 }
 
-Coin::~Coin()
+Mushroom::~Mushroom()
 {
 
 }
 
-void Coin::Initialize()
+void Mushroom::Initialize()
 {
 	ResourceManager* rm = ResourceManager::GetInstance();
 	move_animation = rm->GetImageResource("Resource/Images/Item/coin.png", 4, 4, 1, 32, 32);
@@ -38,22 +38,22 @@ void Coin::Initialize()
 	item_type = eCoin;
 }
 
-void Coin::Update(float delta_seconde)
+void Mushroom::Update(float delta_seconde)
 {
 	AnimationControl(delta_seconde);
 }
 
-void Coin::Draw(const Vector2D& screen_offset) const
+void Mushroom::Draw(const Vector2D& screen_offset) const
 {
 	__super::Draw(screen_offset);
 }
 
-void Coin::Finalize()
+void Mushroom::Finalize()
 {
 
 }
 
-void Coin::AnimationControl(float delta_seconde)
+void Mushroom::AnimationControl(float delta_seconde)
 {
 	animation_time += delta_seconde;
 
