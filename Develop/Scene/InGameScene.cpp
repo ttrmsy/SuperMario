@@ -56,10 +56,10 @@ eSceneType InGameScene::Update(float delta_second)
 
 	InputManager* input = InputManager::GetInstance();
 
-	/*if (p->Get_DeathCount() >= 1)
+	if (p->Get_DeathCount() >= 1)
 	{
 		return eSceneType::eResult;
-	}*/
+	}
 
 	__super::Update(delta_second);
 

@@ -131,7 +131,7 @@ void Player::Update(float delta_seconde)
 	Movement(delta_seconde);
 
 	
-	//DeathCount();
+	DeathCount();
 }
 
 void Player::Draw(const Vector2D& screen_offset) const
@@ -139,16 +139,15 @@ void Player::Draw(const Vector2D& screen_offset) const
 	//親クラスの処理を呼び出す
 	__super::Draw(screen_offset);
 
-<<<<<<< Updated upstream
 	SetFontSize(15);
 	DrawFormatString(100, 100, GetColor(255, 0, 0), "Vx:%f0,Vy:%f0", velocity.x, velocity.y);
 	DrawFormatString(100, 150, GetColor(255, 0, 0), "Bx:%f0,By:%f0", dv.x,dv.y);
 	Vector2D ul = location - (collision.box_size / 2);
 	Vector2D br = location + (collision.box_size / 2);
 	DrawBoxAA(ul.x - screen_offset.x, ul.y, br.x - screen_offset.x, br.y, GetColor(255, 0, 0), FALSE);
-=======
+
+	DrawFormatString(10, 30, 0xffffff, "%f", this->location.y, TRUE);
 	DrawFormatString(10, 10, 0xffffff, "%d", is_death, TRUE);
->>>>>>> Stashed changes
 }
 
 void Player::Finalize()
@@ -390,7 +389,7 @@ void Player::AnimationControl(float delta_second)
 
 void Player::DeathCount()
 {
-	if (location.y >= 425 && eSceneType::eInGame)
+	if (location.y >= 500 && eSceneType::eInGame)
 	{
 		is_death++;
 

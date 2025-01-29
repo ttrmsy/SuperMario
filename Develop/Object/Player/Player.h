@@ -36,10 +36,8 @@ private:
 	bool hit[4];
 	ePlayerState p_state;
 	class Camera* camera;
-<<<<<<< Updated upstream
+
 	Vector2D dv;	//デバック用変数
-=======
->>>>>>> Stashed changes
 	int is_death;
 
 public:
