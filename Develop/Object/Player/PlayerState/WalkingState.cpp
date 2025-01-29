@@ -19,11 +19,8 @@ void WalkingState::Initialize()
 	//“ü—Íî•ñ
 	input = InputManager::GetInstance();
 
-	/*float x = player->Get_Velocity().x;
-	if (x > 0 || x < 0)
-	{
-		speed = x;
-	}*/
+	speed = 0;
+	
 }
 
 void WalkingState::Update()

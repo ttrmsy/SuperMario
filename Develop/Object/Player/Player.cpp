@@ -136,6 +136,13 @@ void Player::Draw(const Vector2D& screen_offset) const
 {
 	//親クラスの処理を呼び出す
 	__super::Draw(screen_offset);
+
+	SetFontSize(15);
+	DrawFormatString(100, 100, GetColor(255, 0, 0), "Vx:%f0,Vy:%f0", velocity.x, velocity.y);
+	DrawFormatString(100, 150, GetColor(255, 0, 0), "Bx:%f0,By:%f0", dv.x,dv.y);
+	Vector2D ul = location - (collision.box_size / 2);
+	Vector2D br = location + (collision.box_size / 2);
+	DrawBoxAA(ul.x - screen_offset.x, ul.y, br.x - screen_offset.x, br.y, GetColor(255, 0, 0), FALSE);
 }
 
 void Player::Finalize()
@@ -147,7 +154,7 @@ void Player::OnHitCollision(GameObject* hit_object)
 {
 	hit_flag = true;
 
-	Vector2D diff, dv;
+	Vector2D diff; //dv;
 	Vector2D target_boxsize, this_boxsize;
 	diff = 0.0f;
 	dv = 0.0f;
@@ -161,11 +168,11 @@ void Player::OnHitCollision(GameObject* hit_object)
 	//2点間の距離を求める
 	diff = this->location - target_location;
 	
-	if (diff.x > 0)	//自身がHitしたオブジェクトよりも右側にいたとき
+	if (diff.x >= 0)	//自身がHitしたオブジェクトよりも右側にいたとき
 	{
 		if (diff.y > 0)	//自身がHitしたオブジェクトよりも下側にいたとき
 		{
-			dv.x = (target_location.x + target_boxsize.x / 2) - (this->location.x - this_boxsize.x / 2);
+      		dv.x = (target_location.x + target_boxsize.x / 2) - (this->location.x - this_boxsize.x / 2);
 			dv.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
 			
 			if (dv.x > dv.y)
@@ -176,6 +183,12 @@ void Player::OnHitCollision(GameObject* hit_object)
 			{
 				this->location.x += dv.x;
 			}
+			
+			if (velocity.y < 0)
+			{
+				velocity.y = 0;
+			}
+	
 		}
 		else	//自身がHitしたオブジェクトよりも上側にいたとき
 		{
@@ -188,12 +201,14 @@ void Player::OnHitCollision(GameObject* hit_object)
 				{
 					this->location.y += -dv.y;
 					
-					if (target_collision.object_type == eGround || target_collision.object_type == eBlock)
+					if (target_collision.object_type == eGround)
 					{
 						is_ground = true;
 						jump_flag = true;
 						g_velocity = 0;
 					}
+
+					
 					
 				}
 				else
@@ -227,6 +242,11 @@ void Player::OnHitCollision(GameObject* hit_object)
 			{
 				this->location.x += -dv.x;
 			}
+
+			if (velocity.y < 0)
+			{
+				velocity.y = 0;
+			}
 		}
 		else	//自身がHitしたオブジェクトよりも上側にいたとき
 		{
@@ -240,12 +260,13 @@ void Player::OnHitCollision(GameObject* hit_object)
 					this->location.y += -dv.y;
 
 					
-					if (target_collision.object_type == eGround || target_collision.object_type == eBlock)
+					if (target_collision.object_type == eGround)
 					{
 						is_ground = true;
 						jump_flag = true;
 						g_velocity = 0;
 					}
+					
 					
 				}
 				else
@@ -360,4 +381,22 @@ void Player::AnimationControl(float delta_second)
 
 }
 
+
+void Player::DeathCount()
+{
+	if (location.y >= 425 && eSceneType::eInGame)
+	{
+		is_death++;
+
+	}
+	else
+	{
+		is_death = 0;
+	}
+}
+
+int Player::Get_DeathCount()
+{
+	return is_death;
+}
 

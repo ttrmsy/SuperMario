@@ -25,17 +25,19 @@ private:
 	/*std::vector<int> SmallMario_animation;
 	std::vector<int> BigMario_animation;
 	std::vector<int> FireMario_animation;*/
-	std::vector<int> move_animation;
-	class PlayerStateBase* player_state;
-	ePlayerState next_state;
-	float animation_time;
-	int animation_count;
-	float g_velocity;
+	std::vector<int> move_animation;	//Player画像
+	class PlayerStateBase* player_state;	//Playerの状態
+	ePlayerState next_state;	//Playerの遷移先状態
+	float animation_time;		//アニメーションの時間
+	int animation_count;		//アニメーションの回数
+	float g_velocity;			//重力
 	bool is_ground;
 	float x;
 	bool hit[4];
 	ePlayerState p_state;
 	class Camera* camera;
+	Vector2D dv;	//デバック用変数
+	int is_death;
 
 public:
 	bool jump_flag;
@@ -60,10 +62,13 @@ public:
 	void Set_IsGround(bool flag);
 	void Set_Camera(Camera* c);
 	void Set_SlideFlag(bool flag);
+	int Get_DeathCount();
 
 private:
 	void Movement(float delta_second);
 	void AnimationControl(float delta_second);
+	void DeathCount();
+
 
 };
 
