@@ -17,7 +17,7 @@ void TitleScene::Initialize()
 	coin_image = UI_coin[0];
 
 	__super::Initialize();
-}
+}   
 
 eSceneType TitleScene::Update(float delta_second)
 {

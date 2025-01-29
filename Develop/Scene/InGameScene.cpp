@@ -59,35 +59,32 @@ void InGameScene::Initialize()
 eSceneType InGameScene::Update(float delta_second)
 {
 
-
+	//オブジェクトのヒット判定確認
 	objm->HitCheck();
 
+	//親クラスの更新処理
 	__super::Update(delta_second);
 
+	//カメラクラスの更新処理の呼び出し
 	camera->Update();
 
+	//オブジェクト削除
 	DeleteObject();
 
+	//描画処理
 	Draw();
 
+	//現在のシーン情報を返す
 	return GetNowSceneType();
 }
 
 void InGameScene::Draw() const
 {
+	//背景描画
 	DrawBackGroundCSV();
 
 
 	LoadGraphScreen(88, 28, "Resource/Images/UI/name_mario.png", TRUE);
-
-	int x, y;
-	x = 96;
-	y = 55;
-	for (int i = 0; i < 6; i++)
-	{
-		DrawRotaGraphF(x, y, 1.0, 0.0, num_image, TRUE);
-		x += 16;
-	}
 
 	__super::Draw();
 }
@@ -102,6 +99,7 @@ eSceneType InGameScene::GetNowSceneType() const
 	return eSceneType::eInGame;
 }
 
+//ヒット判定処理
 void InGameScene::CheckCollision(GameObject* target, GameObject* partner)
 {
 	if (target == nullptr || partner == nullptr)
@@ -126,6 +124,7 @@ void InGameScene::CheckCollision(GameObject* target, GameObject* partner)
 
 }
 
+//マップ生成処理
 void InGameScene::LoadStageMapCSV()
 {
 
@@ -290,6 +289,7 @@ void InGameScene::LoadStageMapCSV()
 	fclose(fp);
 }
 
+//背景生成処理
 void InGameScene::DrawBackGroundCSV() const
 {
 
@@ -472,6 +472,7 @@ void InGameScene::DrawBackGroundCSV() const
 	fclose(fp);
 }
 
+//オブジェクト削除処理
 void InGameScene::DeleteObject()
 {
 	float offset = camera->Get_Offset().x;
