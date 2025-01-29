@@ -13,4 +13,3 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	return D_SUCCESS;
 
 }
-
