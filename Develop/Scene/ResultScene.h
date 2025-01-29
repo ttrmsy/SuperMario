@@ -3,6 +3,9 @@
 
 class ResultScene : public SceneBase
 {
+private:
+	Player* p;
+
 public:
 	virtual void Initialize() override;
 	virtual eSceneType Update(float delta_second) override;

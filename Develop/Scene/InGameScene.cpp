@@ -1,4 +1,5 @@
 #include "InGameScene.h"
+#include "../Utility/InputManager.h"
 #include "../Utility/ResourceManager.h"
 #include "../Object/Player/Player.h"
 #include "../Utility/Collision.h"
@@ -58,29 +59,28 @@ void InGameScene::Initialize()
 
 eSceneType InGameScene::Update(float delta_second)
 {
-
-	//オブジェクトのヒット判定確認
 	objm->HitCheck();
 
-	//親クラスの更新処理
+	InputManager* input = InputManager::GetInstance();
+
+	if (p->Get_DeathCount() >= 1)
+	{
+		return eSceneType::eResult;
+	}
+
 	__super::Update(delta_second);
 
-	//カメラクラスの更新処理の呼び出し
 	camera->Update();
 
-	//オブジェクト削除
 	DeleteObject();
 
-	//描画処理
 	Draw();
 
-	//現在のシーン情報を返す
 	return GetNowSceneType();
 }
 
 void InGameScene::Draw() const
 {
-	//背景描画
 	DrawBackGroundCSV();
 
 
@@ -99,7 +99,6 @@ eSceneType InGameScene::GetNowSceneType() const
 	return eSceneType::eInGame;
 }
 
-//ヒット判定処理
 void InGameScene::CheckCollision(GameObject* target, GameObject* partner)
 {
 	if (target == nullptr || partner == nullptr)
@@ -124,7 +123,6 @@ void InGameScene::CheckCollision(GameObject* target, GameObject* partner)
 
 }
 
-//マップ生成処理
 void InGameScene::LoadStageMapCSV()
 {
 
@@ -166,7 +164,7 @@ void InGameScene::LoadStageMapCSV()
 		{
 			break;
 		}
-		//抽出した文字が'P'ならPlaeyrを描画する
+		//抽出した文字が'P'ならPlayerを描画する
 		else if (c == 'M')
 		{
 			p = objm->CreateGameObject<Player>(generate_location);
@@ -289,7 +287,6 @@ void InGameScene::LoadStageMapCSV()
 	fclose(fp);
 }
 
-//背景生成処理
 void InGameScene::DrawBackGroundCSV() const
 {
 
@@ -472,7 +469,6 @@ void InGameScene::DrawBackGroundCSV() const
 	fclose(fp);
 }
 
-//オブジェクト削除処理
 void InGameScene::DeleteObject()
 {
 	float offset = camera->Get_Offset().x;

@@ -36,6 +36,7 @@ private:
 	bool hit[4];
 	ePlayerState p_state;
 	class Camera* camera;
+
 	Vector2D dv;	//デバック用変数
 	int is_death;
 
