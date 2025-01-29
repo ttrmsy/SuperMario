@@ -12,5 +12,13 @@ class Brick : public BlockBase
 	virtual const Collision& GetCollision() const override;
 	virtual const unsigned char GetZLayer() const override;
 	virtual const bool GetMobility() const override;
+
+private:
+	std::vector<int> block_image;
+	bool up_count;
+	bool down_count;
+	void AnimationControl(float delta_seconde);
+	float animation_time;
+	int animation_count;
 };
 

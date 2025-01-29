@@ -15,6 +15,9 @@ private:
 	Player* p;
 	int stage_count;
 	
+	std::vector<int> UI_num;
+	std::vector<int> UI_string;
+	int num_image;
 
 public:
 	virtual void Initialize() override;
