@@ -16,7 +16,6 @@ void Coin::Initialize()
 	ResourceManager* rm = ResourceManager::GetInstance();
 	move_animation = rm->GetImageResource("Resource/Images/Item/coin.png", 4, 4, 1, 32, 32);
 
-	collision.is_blocking = true;
 	collision.object_type = eItem;
 	collision.hit_object_type.push_back(eObjectType::ePlayer);
 	collision.box_size = Vector2D(32, 32);
@@ -57,7 +56,7 @@ void Coin::AnimationControl(float delta_seconde)
 {
 	animation_time += delta_seconde;
 
-	if (animation_time >= 0.5)
+	if (animation_time >= (1.0f / 16.0f))
 	{
 		animation_time = 0.0f;
 

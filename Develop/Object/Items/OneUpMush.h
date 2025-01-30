@@ -1,13 +1,13 @@
 #pragma once
 #include "ItemBase.h"
 
-class Star : public ItemBase
+class OneUpMush : public ItemBase
 {
 private:
 
 public:
-	Star();
-	~Star();
+	OneUpMush();
+	~OneUpMush();
 
 	//‰Šú‰»ˆ—
 	virtual void Initialize() override;

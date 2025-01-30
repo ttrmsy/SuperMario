@@ -145,6 +145,7 @@
     <ClCompile Include="Object\Items\ItemBase.cpp" />
     <ClCompile Include="Object\Items\Mushroom.cpp" />
     <ClCompile Include="Object\Items\Star.cpp" />
+    <ClCompile Include="Object\Items\OneUpMush.cpp" />
     <ClCompile Include="Utility\Camera.cpp" />
     <ClCompile Include="Object\Blocks\Ground.cpp" />
     <ClCompile Include="Object\Character.cpp" />
@@ -183,6 +184,7 @@
     <ClInclude Include="Object\Items\ItemBase.h" />
     <ClInclude Include="Object\Items\Mushroom.h" />
     <ClInclude Include="Object\Items\Star.h" />
+    <ClInclude Include="Object\Items\OneUpMush.h" />
     <ClInclude Include="Utility\Camera.h" />
     <ClInclude Include="Object\Blocks\Ground.h" />
     <ClInclude Include="Object\Blocks\BlockBase.h" />

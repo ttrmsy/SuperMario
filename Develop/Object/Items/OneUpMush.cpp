@@ -1,20 +1,20 @@
-#include "Flower.h"
+#include "OneUpMush.h"
 #include "../../Utility/ResourceManager.h"
 
-Flower::Flower()
+OneUpMush::OneUpMush()
 {
 
 }
 
-Flower::~Flower()
+OneUpMush::~OneUpMush()
 {
 
 }
 
-void Flower::Initialize()
+void OneUpMush::Initialize()
 {
 	ResourceManager* rm = ResourceManager::GetInstance();
-	move_animation = rm->GetImageResource("Resource/Images/Item/flower.png", 4, 4, 1, 32, 32);
+	image = rm->GetImageResource("Resource/Images/Item/1up_mushroom.png")[0];
 
 	collision.object_type = eItem;
 	collision.hit_object_type.push_back(eObjectType::ePlayer);
@@ -37,22 +37,22 @@ void Flower::Initialize()
 	item_type = eCoin;
 }
 
-void Flower::Update(float delta_seconde)
+void OneUpMush::Update(float delta_seconde)
 {
 	AnimationControl(delta_seconde);
 }
 
-void Flower::Draw(const Vector2D& screen_offset) const
+void OneUpMush::Draw(const Vector2D& screen_offset) const
 {
 	__super::Draw(screen_offset);
 }
 
-void Flower::Finalize()
+void OneUpMush::Finalize()
 {
 
 }
 
-void Flower::AnimationControl(float delta_seconde)
+void OneUpMush::AnimationControl(float delta_seconde)
 {
 	animation_time += delta_seconde;
 
