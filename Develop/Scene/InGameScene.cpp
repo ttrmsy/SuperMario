@@ -23,6 +23,7 @@ void InGameScene::Initialize()
 	ResourceManager* rm = ResourceManager::GetInstance();
 	UI_num = rm->GetImageResource("Resource/Images/UI/num.png", 15, 15, 1, 16, 16);
 	UI_string = rm->GetImageResource("Resource/Images/UI/string.png", 26, 26, 1, 16, 16);
+	num_image = UI_num[0];
 
 	//BGMÇÃÉãÅ[Évçƒê∂
 	PlayMusic("Resource/Sounds/BGM_MarioGround.wav", DX_PLAYTYPE_LOOP);
@@ -85,6 +86,14 @@ void InGameScene::Draw() const
 
 
 	LoadGraphScreen(88, 28, "Resource/Images/UI/name_mario.png", TRUE);
+	int x, y;
+	x = 96;
+	y = 55;
+	for (int i = 0; i < 6; i++)
+	{
+		DrawRotaGraphF(x, y, 1.0, 0.0, num_image, TRUE);
+		x += 16;
+	}
 
 	__super::Draw();
 }
