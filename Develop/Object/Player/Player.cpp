@@ -173,7 +173,7 @@ void Player::OnHitCollision(GameObject* hit_object)
 	//2点間の距離を求める
 	diff = this->location - target_location;
 	
-	if (diff.x >= 0)	//自身がHitしたオブジェクトよりも右側にいたとき
+	if (diff.x > 0)	//自身がHitしたオブジェクトよりも右側にいたとき
 	{
 		if (diff.y > 0)	//自身がHitしたオブジェクトよりも下側にいたとき
 		{
