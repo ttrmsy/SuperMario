@@ -183,16 +183,14 @@ void Player::OnHitCollision(GameObject* hit_object)
 			if (dv.x > dv.y)
 			{
 				this->location.y += dv.y;
+				velocity.y = 0;
 			}
 			else
 			{
 				this->location.x += dv.x;
 			}
 			
-			if (velocity.y < 0)
-			{
-				velocity.y = 0;
-			}
+			
 	
 		}
 		else	//自身がHitしたオブジェクトよりも上側にいたとき
@@ -239,24 +237,22 @@ void Player::OnHitCollision(GameObject* hit_object)
 			dv.x = (this->location.x + this_boxsize.x / 2) - (target_location.x - target_boxsize.x / 2);
 			dv.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
 
-			if (dv.x > dv.y)
-			{
-				this->location.y += dv.y;
-			}
-			else
+			if (dv.x < dv.y)
 			{
 				this->location.x += -dv.x;
 			}
-
-			if (velocity.y < 0)
+			else
 			{
+				this->location.y += dv.y;
 				velocity.y = 0;
 			}
+
+			
 		}
 		else	//自身がHitしたオブジェクトよりも上側にいたとき
 		{
-			dv.x = (this->location.x + this_boxsize.x / 2) - (target_location.x - target_boxsize.x / 2);
-			dv.y = (this->location.y + this_boxsize.y / 2) - (target_location.y - target_boxsize.y / 2);
+			dv = (this->location + this_boxsize / 2) - (target_location - target_boxsize / 2);
+			//dv.y = (this->location.y + this_boxsize.y / 2) - (target_location.y - target_boxsize.y / 2);
 
 			if (dv.x > dv.y)
 			{

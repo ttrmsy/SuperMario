@@ -19,7 +19,20 @@ void WalkingState::Initialize()
 	//“ü—Íî•ñ
 	input = InputManager::GetInstance();
 
-	speed = 0;
+	if (speed < 0)
+	{
+		if (input->GetKeyState(KEY_INPUT_D) == eInputState::Held || input->GetKeyState(KEY_INPUT_D) == eInputState::Pressed)
+		{
+			speed = 3;
+		}
+	}
+	else if (speed > 0)
+	{
+		if (input->GetKeyState(KEY_INPUT_A) == eInputState::Held || input->GetKeyState(KEY_INPUT_A) == eInputState::Pressed)
+		{
+			speed = -3;
+		}
+	}
 	
 }
 
