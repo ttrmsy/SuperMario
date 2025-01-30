@@ -21,6 +21,4 @@ public:
 
 private:
 
-	//アニメーション処理
-	void AnimationControl(float delta_second);
 };

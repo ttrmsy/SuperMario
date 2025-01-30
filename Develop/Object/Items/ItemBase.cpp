@@ -12,6 +12,11 @@ ItemBase::~ItemBase()
 
 }
 
+void ItemBase::Movement()
+{
+
+}
+
 //“–‚½‚è”»’èˆ—
 void ItemBase::OnHitCollision(GameObject* hit_object)
 {

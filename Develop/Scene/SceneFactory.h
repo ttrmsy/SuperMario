@@ -17,6 +17,7 @@ public:
 		case eSceneType::eInGame:
 			return dynamic_cast<SceneBase*>(new InGameScene());
 
+
 		case eSceneType::eResult:
 			return dynamic_cast<SceneBase*>(new ResultScene());
 

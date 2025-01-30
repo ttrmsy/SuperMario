@@ -14,7 +14,7 @@ Mushroom::~Mushroom()
 void Mushroom::Initialize()
 {
 	ResourceManager* rm = ResourceManager::GetInstance();
-	move_animation = rm->GetImageResource("Resource/Images/Item/coin.png", 4, 4, 1, 32, 32);
+	image = rm->GetImageResource("Resource/Images/Item/mushroom.png")[0];		//‰Šú‰æ‘œ‚ÌÝ’è
 
 	collision.is_blocking = true;
 	collision.object_type = eItem;
@@ -27,9 +27,6 @@ void Mushroom::Initialize()
 	//‰Â“®«‚ÌÝ’è
 	is_mobility = false;
 
-	//‰Šú‰æ‘œÝ’è
-	image = move_animation[0];
-
 	animation_count = 0;
 
 	animation_time = 0;
@@ -40,7 +37,7 @@ void Mushroom::Initialize()
 
 void Mushroom::Update(float delta_seconde)
 {
-	AnimationControl(delta_seconde);
+
 }
 
 void Mushroom::Draw(const Vector2D& screen_offset) const
@@ -51,24 +48,4 @@ void Mushroom::Draw(const Vector2D& screen_offset) const
 void Mushroom::Finalize()
 {
 
-}
-
-void Mushroom::AnimationControl(float delta_seconde)
-{
-	animation_time += delta_seconde;
-
-	if (animation_time >= 0.5)
-	{
-		animation_time = 0.0f;
-
-		image = move_animation[animation_count];
-
-		animation_count++;
-
-		if (animation_count > 3)
-		{
-			animation_count = 0;
-		}
-
-	}
 }

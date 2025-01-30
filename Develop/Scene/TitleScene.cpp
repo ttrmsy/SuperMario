@@ -17,7 +17,7 @@ void TitleScene::Initialize()
 	coin_image = UI_coin[0];
 
 	__super::Initialize();
-}
+}   
 
 eSceneType TitleScene::Update(float delta_second)
 {
@@ -36,8 +36,10 @@ void TitleScene::Draw() const
 	//タイトル背景画像の描画
 	LoadGraphScreen(0, 0, "Resource/Images/title.png", TRUE);
 
-	DrawFormatString(210, 300, GetColor(255, 255, 255), "PUSH SPASE");
 	SetFontSize(40);
+
+	DrawFormatString(210, 300, GetColor(255, 255, 255), "PUSH SPASE");
+
 	//UI：文字MARIOの描画
 	LoadGraphScreen(88, 28, "Resource/Images/UI/name_mario.png", TRUE);
 	//UI：スコアの描画（6桁の数字）
