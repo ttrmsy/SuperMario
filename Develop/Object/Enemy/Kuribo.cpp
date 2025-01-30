@@ -100,6 +100,7 @@ void Kuribo::OnHitCollision(GameObject* hit_object)
 		{
 			velocity.y = 0.0f;
 			state = die;
+			PlaySound("Resource/Sounds/Se_StepOn.wav",DX_PLAYTYPE_BACK);
 		}
 	}
 
