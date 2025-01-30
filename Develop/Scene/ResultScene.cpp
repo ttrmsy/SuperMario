@@ -23,6 +23,11 @@ eSceneType ResultScene::Update(float delta_second)
 
 void ResultScene::Draw() const
 {
+	__super::Draw();
+
+	SetFontSize(60);
+
+	DrawFormatString(180, 210, GetColor(255, 255, 255), "GAME OVER");
 
 }
 
