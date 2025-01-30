@@ -23,7 +23,7 @@ void JumpingState::Initialize()
 	j_velocity = player->Get_Velocity();
 	player->jump_flag = false;
 	Held_jump = 0.0f;
-	PlayMusic("Resource/Sounds/SE_SuperJump.wav", DX_PLAYTYPE_BACK);
+	PlaySound("Resource/Sounds/SE_SuperJump.wav", DX_PLAYTYPE_BACK);
 }
 
 void JumpingState::Update()
