@@ -72,6 +72,7 @@ void Question::OnHitCollision(GameObject* hit_object)
 	{
 		if (hit_object->GetCollision().object_type == ePlayer)
 		{
+			PlaySound("Resource/Sounds/SE_Block.wav", DX_PLAYTYPE_BACK);
 			image = kara_block;
 			hit_flag = true;
 		}

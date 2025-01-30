@@ -13,7 +13,12 @@ private:
 	int cloud_image[6];
 	int mountain_image[6];
 	Player* p;
-	
+
+
+
+	std::vector<int> UI_num;
+	std::vector<int> UI_string;
+	int num_image;
 
 public:
 	virtual void Initialize() override;

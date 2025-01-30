@@ -154,6 +154,7 @@ void Nokonoko::OnHitCollision(GameObject* hit_object)
 				else
 				{
 					state = down;
+					PlaySound("Resource/Sounds/Se_StepOn.wav", DX_PLAYTYPE_BACK);
 				}
 				
 			}
@@ -215,6 +216,7 @@ void Nokonoko::OnHitCollision(GameObject* hit_object)
 					{
 						velocity.x = 0;
 						state = down;
+						PlaySound("Resource/Sounds/Se_StepOn.wav", DX_PLAYTYPE_BACK);
 					}
 					
 				}

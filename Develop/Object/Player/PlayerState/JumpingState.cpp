@@ -3,7 +3,7 @@
 #include "DxLib.h"
 
 #define JUMP_VECTOR (-10.0f)
-#define D_GRAVITY (9.807f)		//d—Í‰Á‘¬“x
+#define D_GRAVITY (9.807f)		//ï¿½dï¿½Í‰ï¿½ï¿½ï¿½ï¿½x
 
 JumpingState::JumpingState(class Player* p)
 	: PlayerStateBase(p),g_velocity(0)
@@ -24,6 +24,7 @@ void JumpingState::Initialize()
 	player->jump_flag = false;
 	Held_jump = 0.0f;
 	PlaySound("Resource/Sounds/SE_SuperJump.wav", DX_PLAYTYPE_BACK);
+
 }
 
 void JumpingState::Update()
@@ -59,7 +60,7 @@ void JumpingState::Update()
 
 	
 
-	//SPACEƒL[‚ð‰Ÿ‚µ‘±‚¯‚é‚ÆƒWƒƒƒ“ƒv‚Ì‚‚³‚ª•Ï‰»‚·‚é
+	//SPACEï¿½Lï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÆƒWï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï‰ï¿½ï¿½ï¿½ï¿½ï¿½
 	if (input->GetKeyState(KEY_INPUT_SPACE) == Held && Held_jump < 24)
 	{
 		j_velocity = player->Get_Velocity();
