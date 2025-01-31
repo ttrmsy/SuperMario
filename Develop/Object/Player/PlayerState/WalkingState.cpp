@@ -23,14 +23,14 @@ void WalkingState::Initialize()
 	{
 		if (input->GetKeyState(KEY_INPUT_D) == eInputState::Held || input->GetKeyState(KEY_INPUT_D) == eInputState::Pressed)
 		{
-			speed = 3;
+			speed = 0;
 		}
 	}
 	else if (speed > 0)
 	{
 		if (input->GetKeyState(KEY_INPUT_A) == eInputState::Held || input->GetKeyState(KEY_INPUT_A) == eInputState::Pressed)
 		{
-			speed = -3;
+			speed = 0;
 		}
 	}
 	
@@ -136,4 +136,9 @@ void WalkingState::Finalize()
 ePlayerState WalkingState::GetState() const
 {
 	return ePlayerState::walk;
+}
+
+void WalkingState::Set_Speed(float s)
+{
+	speed = s;
 }

@@ -16,5 +16,6 @@ public:
 	virtual void Draw() const override;
 	virtual void Finalize() override;
 	virtual ePlayerState GetState() const override;
+	void Set_Speed(float s);
 };
 

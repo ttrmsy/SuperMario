@@ -39,6 +39,7 @@ void PlayerStateFactory::Finalize()
 	 {
 	 case ePlayerState::idle:
 		 instance->idle->Initialize();
+		 instance->walk->Set_Speed(0.0f);
 		 ret = instance->idle;
 		 break;
 
