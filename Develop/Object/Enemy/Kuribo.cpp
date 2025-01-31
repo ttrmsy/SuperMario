@@ -1,6 +1,7 @@
 #include "Kuribo.h"
 #include "../../Utility/ResourceManager.h"
 
+#define D_GRAVITY (9.807f)		//重力加速度
 #define SPEED (30)
 
 void Kuribo::Initialize()
@@ -75,34 +76,145 @@ void Kuribo::Finalize()
 
 void Kuribo::OnHitCollision(GameObject* hit_object)
 {
-	if (state != die)
+	hit_flag = true;
+
+	Vector2D diff; //dv;
+	Vector2D target_boxsize, this_boxsize;
+	diff = 0.0f;
+	dv = 0.0f;
+	Vector2D target_location = hit_object->GetLocation();
+	Collision target_collision = hit_object->GetCollision();
+
+	target_boxsize = hit_object->GetCollision().box_size;
+	this_boxsize = this->collision.box_size;
+
+
+	//2点間の距離を求める
+	diff = this->location - target_location;
+
+	if (diff.x > 0)	//自身がHitしたオブジェクトよりも右側にいたとき
 	{
-		Collision target = hit_object->GetCollision();
+		if (diff.y > 0)	//自身がHitしたオブジェクトよりも下側にいたとき
+		{
+			dv.x = (target_location.x + target_boxsize.x / 2) - (this->location.x - this_boxsize.x / 2);
+			dv.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
 
-		Vector2D t_location = hit_object->GetLocation();
+			if (dv.x > dv.y)
+			{
+				this->location.y += dv.y;
+			}
+			else
+			{
+				this->location.x += dv.x;
+			}
 
-		float side[2][4];
+			if (velocity.y < 0)
+			{
+				velocity.y = 0;
+			}
 
+		}
+		else	//自身がHitしたオブジェクトよりも上側にいたとき
+		{
+			dv.x = (target_location.x + target_boxsize.x / 2) - (this->location.x - this_boxsize.x / 2);
+			dv.y = (this->location.y + this_boxsize.y / 2) - (target_location.y - target_boxsize.y / 2);
+
+			if (dv.x > dv.y)
+			{
+				if (target_collision.object_type != eEnemy)
+				{
+					this->location.y += -dv.y;
+
+					if (target_collision.object_type == eGround)
+					{
+						is_ground = true;
+						g_velocity = 0;
+					}
+
+
+
+				}
+				else
+				{
+					if (hit_object->GetMobility() == true)
+					{
+						velocity.y = 0;
+						velocity.y += -20.0;
+					}
+				}
+
+			}
+			else
+			{
+				this->location.x += dv.x;
+			}
+		}
+	}
+	else	//自身がHitしたオブジェクトよりも左側にいたとき
+	{
+		if (diff.y > 0)	//自身がHitしたオブジェクトよりも下側にいたとき
+		{
+			dv.x = (this->location.x + this_boxsize.x / 2) - (target_location.x - target_boxsize.x / 2);
+			dv.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
+
+			if (dv.x > dv.y)
+			{
+				this->location.y += dv.y;
+			}
+			else
+			{
+				this->location.x += -dv.x;
+			}
+
+			if (velocity.y < 0)
+			{
+				velocity.y = 0;
+			}
+		}
+		else	//自身がHitしたオブジェクトよりも上側にいたとき
+		{
+			dv.x = (this->location.x + this_boxsize.x / 2) - (target_location.x - target_boxsize.x / 2);
+			dv.y = (this->location.y + this_boxsize.y / 2) - (target_location.y - target_boxsize.y / 2);
+
+			if (dv.x > dv.y)
+			{
+				if (target_collision.object_type != eEnemy)
+				{
+					this->location.y += -dv.y;
+
+
+					if (target_collision.object_type == eGround)
+					{
+						is_ground = true;
+						g_velocity = 0;
+					}
+
+
+				}
+				else
+				{
+					if (hit_object->GetMobility() == true)
+					{
+						velocity.y = 0;
+						velocity.y += -20.0;
+					}
+				}
+
+			}
+			else
+			{
+				this->location.x += -dv.x;
+			}
+		}
+	}
 		
-		side[0][UP] = this->location.y - (this->collision.box_size.y / 2);
-		side[0][RIGHT] = this->location.x + (this->collision.box_size.x / 2);
-		side[0][DOWN] = this->location.y + (this->collision.box_size.y / 2);
-		side[0][LEFT] = this->location.x - (this->collision.box_size.x / 2);
-
-		
-		side[1][UP] = t_location.y - (target.box_size.y / 2);
-		side[1][RIGHT] = t_location.x + (target.box_size.x / 2);
-		side[1][DOWN] = t_location.y + (target.box_size.y / 2);
-		side[1][LEFT] = t_location.x - (target.box_size.x / 2);
-
-		
-		if (HitCheckUp(hit_object, side) == true && target.object_type == ePlayer)
+		/*if (HitCheckUp(hit_object, side) == true && target.object_type == ePlayer)
 		{
 			velocity.y = 0.0f;
 			state = die;
 			PlaySound("Resource/Sounds/Se_StepOn.wav",DX_PLAYTYPE_BACK);
-		}
-	}
+		}*/
+	
 
 }
 

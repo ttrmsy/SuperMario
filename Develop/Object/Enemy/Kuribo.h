@@ -9,8 +9,12 @@ private:
 	std::vector<int> move_animation;
 	int animation_count;
 	float animation_time;
+	float g_velocity;			//重力
+	bool is_ground;				//地上
 	Camera* camera;
 	class Player* player;
+
+	Vector2D dv;	//デバック用変数
 
 public:
 	virtual void Initialize() override;
