@@ -1,6 +1,5 @@
 #pragma once
 #include "BlockBase.h"
-
 class Question : public BlockBase
 {
 private:
