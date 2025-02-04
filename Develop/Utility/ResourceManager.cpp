@@ -12,6 +12,12 @@ const std::vector<int>& ResourceManager::GetImageResource(const std::string& fil
 			// 分割読み込みを行う
 			CreateImagesResource(file_name, all_num, num_x, num_y, size_x, size_y);
 		}
+		if (all_num == 1)
+		{
+			// 分割読み込みを行わない
+			CreateImageResource(file_name);
+		}
+
 	}
 
 	// コンテナ内のデータを返す

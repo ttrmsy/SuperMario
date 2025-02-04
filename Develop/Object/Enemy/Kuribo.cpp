@@ -51,7 +51,7 @@ void Kuribo::Update(float delta_seconde)
 		break;
 
 	case die:
-		is_mobility = false;
+		//is_mobility = false;
 		image = move_animation[2];
 		die_time++;
 		break;
@@ -98,6 +98,9 @@ void Kuribo::OnHitCollision(GameObject* hit_object)
 		{
 			dv.x = (target_location.x + target_boxsize.x / 2) - (this->location.x - this_boxsize.x / 2);
 			dv.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
+
+			state = die;
+			PlaySound("Resource/Sounds/Se_StepOn.wav", DX_PLAYTYPE_BACK);
 
 			if (dv.x > dv.y)
 			{
@@ -157,6 +160,9 @@ void Kuribo::OnHitCollision(GameObject* hit_object)
 			dv.x = (this->location.x + this_boxsize.x / 2) - (target_location.x - target_boxsize.x / 2);
 			dv.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
 
+			state = die;
+			PlaySound("Resource/Sounds/Se_StepOn.wav", DX_PLAYTYPE_BACK);
+
 			if (dv.x > dv.y)
 			{
 				this->location.y += dv.y;
@@ -207,15 +213,6 @@ void Kuribo::OnHitCollision(GameObject* hit_object)
 			}
 		}
 	}
-		
-		/*if (HitCheckUp(hit_object, side) == true && target.object_type == ePlayer)
-		{
-			velocity.y = 0.0f;
-			state = die;
-			PlaySound("Resource/Sounds/Se_StepOn.wav",DX_PLAYTYPE_BACK);
-		}*/
-	
-
 }
 
 const Vector2D& Kuribo::GetLocation() const

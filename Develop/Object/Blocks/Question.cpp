@@ -1,18 +1,25 @@
 #include "Question.h"
 #include "../../Utility/ResourceManager.h"
+#include "../../Utility/Singleton.h"
+#include "../Items/Mushroom.h"
 #include "DxLib.h"
+
+#include "../GameObjectManager.h"
 
 void Question::Initialize()
 {
 	ResourceManager* rm = ResourceManager::GetInstance();
 	block_image = rm->GetImageResource("Resource/Images/Block/hatena.png", 4, 4, 1, 32, 32);
-	kara_block = LoadGraph("Resource/Images/Block/kara_block.png");
+	block_sound = rm->GetSoundResource("Resource/Sounds/SE_Block.wav");
+	kara_block = rm->GetImageResource("Resource/Images/Block/kara_block.png")[0];
 	collision.object_type = eBlock;
 	collision.hit_object_type.push_back(ePlayer);
 	collision.hit_object_type.push_back(eEnemy);
 	collision.hit_object_type.push_back(eItem);
 
 	collision.box_size = Vector2D(32, 32);
+
+	z_layer = 5;
 
 	is_mobility = false;
 
@@ -70,15 +77,25 @@ void Question::OnHitCollision(GameObject* hit_object)
 
 	if (diff.y < 0)
 	{
-		if (hit_object->GetCollision().object_type == ePlayer)
+		//当たったオブジェクトがマリオで画像が空のブロックではない時
+		if (hit_object->GetCollision().object_type == ePlayer && image != kara_block)
 		{
-			PlaySound("Resource/Sounds/SE_Block.wav", DX_PLAYTYPE_BACK);
+			//ゲームオブジェクトのポインタを取得
+			GameObjectManager* gm_p = GameObjectManager::GetInstance();
+
+			//soundを再生
+			PlaySoundMem(block_sound, DX_PLAYTYPE_BACK);
+
+			//画像を空のブロックに変更する
 			image = kara_block;
+
+			//ヒットフラグをtrueにする
 			hit_flag = true;
+
+			//キノコを生成する
+			gm_p->CreateGameObject<Mushroom>(this->location)->SetOldLocation(this->location);
 		}
 	}
-
-
 }
 const Vector2D& Question::GetLocation() const
 {
