@@ -2,12 +2,6 @@
 #include "../Utility/Singleton.h"
 #include "GameObject.h"
 #include <vector>
-#include "../Utility/Vector2D.h"
-#include "../Utility/Application.h"
-#include "../Scene/SceneBase.h"
-#include "../Utility/Collision.h"
-#include "Player/Player.h"
-
 
 class GameObjectManager : public Singleton <GameObjectManager>
 {
@@ -15,8 +9,6 @@ private:
 	std::vector<GameObject*> create_object;
 	std::vector<GameObject*> destroy_object;
 	std::vector<GameObject*> game_object_list;
-	Player* p = new Player();
-	
 	
 public:
 
