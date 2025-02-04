@@ -1,9 +1,9 @@
 #include "Player.h"
 #include "../../Utility/ResourceManager.h"
-#include "../../Utility/InputManager.h"
 #include "PlayerState/PlayerStateFactory.h"
 #include "../../Utility/Application.h"
 #include "DxLib.h"
+#include "../GameObjectManager.h"
 
 
 #define D_GRAVITY (9.807f)		//重力加速度
@@ -52,8 +52,10 @@ void Player::Initialize()
 	//横スクロール用カメラのポインタ
 	camera = nullptr;
 
-	//方
+	//スライド（ブレーキ）フラグ
 	slide_flag = false;
+
+	state = live;
 
 }
 
@@ -72,8 +74,10 @@ void Player::Update(float delta_seconde)
 	p_state = GetPlayerState();
 
 	//プレイヤーの状態で、処理を変える
-	switch (p_state)
+	if (state == live)
 	{
+		switch (p_state)
+		{
 		case ePlayerState::idle:
 			image = move_animation[0];
 			/*player_state->Initialize();*/
@@ -93,6 +97,15 @@ void Player::Update(float delta_seconde)
 
 		default:
 			break;
+		}
+	}
+	else if(state == die)
+	{
+		image = move_animation[6];
+
+		GameObjectManager* m = GameObjectManager::GetInstance();
+		m->DestroyGameObject(this);
+
 	}
 
 	
@@ -173,7 +186,7 @@ void Player::OnHitCollision(GameObject* hit_object)
 	//2点間の距離を求める
 	diff = this->location - target_location;
 	
-	if (diff.x > 0)	//自身がHitしたオブジェクトよりも右側にいたとき
+	if (diff.x >= 0)	//自身がHitしたオブジェクトよりも右側にいたとき
 	{
 		if (diff.y > 0)	//自身がHitしたオブジェクトよりも下側にいたとき
 		{
@@ -188,6 +201,10 @@ void Player::OnHitCollision(GameObject* hit_object)
 			else
 			{
 				this->location.x += dv.x;
+				/*if (target_collision.object_type == eEnemy)
+				{
+					state = die;
+				}*/
 			}
 			
 			
@@ -204,9 +221,9 @@ void Player::OnHitCollision(GameObject* hit_object)
 				{
 					this->location.y += -dv.y;
 					
-					if (target_collision.object_type == eGround)
+					if (target_collision.object_type == eGround || target_collision.object_type == eBlock)
 					{
-						is_ground = true;
+ 						is_ground = true;
 						jump_flag = true;
 						g_velocity = 0;
 					}
@@ -251,8 +268,8 @@ void Player::OnHitCollision(GameObject* hit_object)
 		}
 		else	//自身がHitしたオブジェクトよりも上側にいたとき
 		{
-			dv = (this->location + this_boxsize / 2) - (target_location - target_boxsize / 2);
-			//dv.y = (this->location.y + this_boxsize.y / 2) - (target_location.y - target_boxsize.y / 2);
+			dv.x = (this->location.x + this_boxsize.x / 2) - (target_location.x - target_boxsize.x / 2);
+			dv.y = (this->location.y + this_boxsize.y / 2) - (target_location.y - target_boxsize.y / 2);
 
 			if (dv.x > dv.y)
 			{
@@ -261,7 +278,7 @@ void Player::OnHitCollision(GameObject* hit_object)
 					this->location.y += -dv.y;
 
 					
-					if (target_collision.object_type == eGround)
+					if (target_collision.object_type == eGround || target_collision.object_type == eBlock)
 					{
 						is_ground = true;
 						jump_flag = true;
@@ -283,9 +300,14 @@ void Player::OnHitCollision(GameObject* hit_object)
 			else
 			{
 				this->location.x += -dv.x;
+				/*if (target_collision.object_type == eEnemy)
+				{
+					state = die;
+				}*/
 			}
 		}
 	}
+
 
 }
 
@@ -379,6 +401,8 @@ void Player::AnimationControl(float delta_second)
 		}
 		
 	}
+
+	
 
 }
 

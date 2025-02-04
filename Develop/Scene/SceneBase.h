@@ -1,6 +1,5 @@
 #pragma once
 #include "../Utility/Vector2D.h"
-#include "../Object/GameObject.h"
 #include "../Object/GameObjectManager.h"
 #include "../Utility/Camera.h"
 
@@ -45,7 +44,14 @@ public:
 
 		for (GameObject* obj : objm->GetObjectsList())
 		{
-			obj->Update(delta_second);
+			//オブジェクトが画面内にあるか判定処理
+			if (obj->GetLocation().x <= camera->Get_CameraLocation().x + D_WIN_MAX_X / 2 ||
+				obj->GetLocation().x >= camera->Get_CameraLocation().x - D_WIN_MAX_X / 2)
+			{
+				//オブジェクトが画面内にあったら更新する
+				obj->Update(delta_second);
+			}
+
 		}
 
 		objm->CheckDstroyObject();
