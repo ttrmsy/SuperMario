@@ -491,6 +491,7 @@ void InGameScene::DeleteObject()
 			if (0 >= x)
 			{
  				objm->DestroyGameObject(object_list[i]);
+
 			}
 		}
 
