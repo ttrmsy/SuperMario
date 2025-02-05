@@ -18,7 +18,7 @@ void StoppedState::Initialize()
 	player->Set_Velocity(Vector2D(0.0f,player->Get_Velocity().y));
 }
 
-void StoppedState::Update()
+void StoppedState::Update(float delta_seconde)
 {
 	if (input->GetKeyState(KEY_INPUT_A) == eInputState::Pressed)
 	{

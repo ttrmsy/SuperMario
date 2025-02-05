@@ -8,7 +8,7 @@ void Pipe::Initialize()
 	pipe_image[2] = LoadGraph("Resource/Images/dokan_right_up.png");
 	pipe_image[3] = LoadGraph("Resource/Images/dokan_right_down.png");
 
-	collision.object_type = eBlock;
+	collision.object_type = ePipe;
 	collision.hit_object_type.push_back(ePlayer);
 	collision.hit_object_type.push_back(eEnemy);
 	collision.hit_object_type.push_back(eItem);

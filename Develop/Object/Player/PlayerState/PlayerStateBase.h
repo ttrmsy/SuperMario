@@ -15,7 +15,7 @@ public:
 	~PlayerStateBase() = default;
 
 	virtual void Initialize() = 0;
-	virtual void Update() = 0;
+	virtual void Update(float delta_seconde) = 0;
 	virtual void Draw() const = 0;
 	virtual void Finalize() = 0;
 	virtual enum ePlayerState GetState() const = 0;

@@ -2,7 +2,7 @@
 #include "../../../Utility/InputManager.h"
 #include "DxLib.h"
 
-#define JUMP_VECTOR (-15.0f)
+#define JUMP_VECTOR (-23.0f)
 #define D_GRAVITY (9.807f)		//�d�͉����x
 
 JumpingState::JumpingState(class Player* p)
@@ -27,7 +27,7 @@ void JumpingState::Initialize()
 
 }
 
-void JumpingState::Update()
+void JumpingState::Update(float delta_seconde)
 {
 	InputManager* input = InputManager::GetInstance();
 
@@ -42,7 +42,7 @@ void JumpingState::Update()
 		if (input_d != eInputState::Pressed && input_d != eInputState::Held)
 		{
 			j_velocity = player->Get_Velocity();
-			j_velocity.x += -0.15;
+			j_velocity.x += -0.15 /** delta_seconde*/;
 			player->Set_Velocity(j_velocity);
 		}
 
@@ -54,7 +54,7 @@ void JumpingState::Update()
 		if (input_a != eInputState::Pressed && input_a != eInputState::Held)
 		{
 			j_velocity = player->Get_Velocity();
-			j_velocity.x += 0.1;
+			j_velocity.x += 0.15 /** delta_seconde*/;
 			player->Set_Velocity(j_velocity);
 		}
 
@@ -66,14 +66,14 @@ void JumpingState::Update()
 	if (input->GetKeyState(KEY_INPUT_SPACE) == Held && Held_jump < 24)
 	{
 		j_velocity = player->Get_Velocity();
-		j_velocity.y += -0.2;
+		j_velocity.y += -0.2 /** delta_seconde*/;
 		player->Set_Velocity(j_velocity);
 		Held_jump++;
 	}
 
 	if (j_velocity.y >= 0 && j_velocity.y < 12)
 	{
-		j_velocity.y += 2;
+		j_velocity.y += 2 /** delta_seconde*/;
 		player->Set_Velocity(j_velocity);
 	}
 	
@@ -85,13 +85,11 @@ void JumpingState::Update()
 		if (input->GetKeyState(KEY_INPUT_A) == Pressed || input->GetKeyState(KEY_INPUT_A) == Held
 			|| input->GetKeyState(KEY_INPUT_D) == Pressed || input->GetKeyState(KEY_INPUT_D) == Held)
 		{
-			g_velocity = 0;
 			player->SetNextState(ePlayerState::walk);
 		}
 
 		if (input->GetKeyState(KEY_INPUT_A) == None && input->GetKeyState(KEY_INPUT_D) == None)
 		{
-			g_velocity = 0;
 			player->SetNextState(ePlayerState::idle);
 		}
 	}

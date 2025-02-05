@@ -5,6 +5,7 @@
 #include "DxLib.h"
 #include "../GameObjectManager.h"
 #include "../../Utility/InputManager.h"
+#include "../Enemy/Nokonoko.h"
 
 #define D_GRAVITY (9.807f)		//重力加速度
 #define P_SPEED (50.0f)
@@ -23,7 +24,7 @@ void Player::Initialize()
 	collision.hit_object_type.push_back(eObjectType::eEnemy);
 	collision.hit_object_type.push_back(eObjectType::eGround);
 	collision.hit_object_type.push_back(eObjectType::eItem);
-	collision.box_size = Vector2D(31,31);
+	collision.box_size = Vector2D(32,32);
 
 	//レイヤー設定
 	z_layer = 5;
@@ -94,17 +95,17 @@ void Player::Update(float delta_seconde)
 		case ePlayerState::idle:
 			image = move_animation[0];
 			/*player_state->Initialize();*/
-			player_state->Update();
+			player_state->Update(delta_seconde);
 			break;
 
 		case ePlayerState::walk:
 			/*player_state->Initialize();*/
-			player_state->Update();
+			player_state->Update(delta_seconde);
 			AnimationControl(delta_seconde);
 			break;
 
 		case ePlayerState::jump:
-			player_state->Update();
+			player_state->Update(delta_seconde);
 			image = move_animation[5];
 			break;
 
@@ -118,19 +119,19 @@ void Player::Update(float delta_seconde)
 			break;
 		}
 	}
-	else if(state == die)
+	/*else if(state == die)
 	{
 		image = move_animation[6];
-	}
+	}*/
 
 	if (input->GetKeyState(KEY_INPUT_Z) == eInputState::Held)
 	{
 		GetItem_Animation(delta_seconde);
 	}
 	
-	if (is_ground == false)
+	if (is_ground == false && p_state != get)
 	{
-		g_velocity += D_GRAVITY / 444.0f;
+		g_velocity += D_GRAVITY * delta_seconde;
 		velocity.y += g_velocity;
 	}
 	else
@@ -140,8 +141,9 @@ void Player::Update(float delta_seconde)
 
 	
 
-	if (hit_flag == false && p_state != jump && p_state != none)
+	if (hit_flag == false && p_state != jump && p_state != get)
 	{
+		is_ground = false;
 		velocity.y = 6;
 		jump_flag = false;
 	}
@@ -161,7 +163,6 @@ void Player::Update(float delta_seconde)
 	}
 	
 	Movement(delta_seconde);
-
 	
 	DeathCount();
 }
@@ -173,7 +174,7 @@ void Player::Draw(const Vector2D& screen_offset) const
 
 	SetFontSize(15);
 	DrawFormatString(100, 100, GetColor(255, 0, 0), "Vx:%f0,Vy:%f0", velocity.x, velocity.y);
-	DrawFormatString(100, 150, GetColor(255, 0, 0), "Bx:%f0,By:%f0", dv.x,dv.y);
+	DrawFormatString(100, 150, GetColor(255, 0, 0), "is_ground:%d", is_ground);
 	Vector2D ul = location - (collision.box_size / 2);
 	Vector2D br = location + (collision.box_size / 2);
 	DrawBoxAA(ul.x - screen_offset.x, ul.y, br.x - screen_offset.x, br.y, GetColor(255, 0, 0), FALSE);
@@ -215,15 +216,19 @@ void Player::OnHitCollision(GameObject* hit_object)
 			if (dv.x > dv.y)
 			{
 				this->location.y += dv.y;
-				velocity.y = 0;
+				if (target_collision.object_type == eBlock)
+				{
+					velocity.y = 0;
+				}
+				
 			}
 			else
 			{
 				this->location.x += dv.x;
-				if (target_collision.object_type == eEnemy)
+				/*if (target_collision.object_type == eEnemy)
 				{
 					state = die;
-				}
+				}*/
 			}
 			
 			
@@ -240,14 +245,17 @@ void Player::OnHitCollision(GameObject* hit_object)
 				{
 					this->location.y += -dv.y;
 					
-					if (target_collision.object_type == eGround || target_collision.object_type == eBlock)
+					if (target_collision.object_type == eGround || target_collision.object_type == eBlock
+						|| target_collision.object_type == ePipe)
 					{
-						is_ground = true;
-						jump_flag = true;
+						if (velocity.y > 0)
+						{
+							is_ground = true;
+							jump_flag = true;
+						}
+						
 						g_velocity = 0;
 					}
-
-					
 					
 				}
 				else
@@ -280,7 +288,10 @@ void Player::OnHitCollision(GameObject* hit_object)
 			else
 			{
 				this->location.y += dv.y;
-				velocity.y = 0;
+				if (target_collision.object_type == eBlock)
+				{
+  					velocity.y = 0;
+				}
 			}
 
 			
@@ -297,11 +308,16 @@ void Player::OnHitCollision(GameObject* hit_object)
 					this->location.y += -dv.y;
 
 					
-					if (target_collision.object_type == eGround || target_collision.object_type == eBlock)
+					if (target_collision.object_type == eGround || target_collision.object_type == eBlock
+						|| target_collision.object_type == ePipe)
 					{
+						if (velocity.y > 0)
+						{
 							is_ground = true;
 							jump_flag = true;
-							g_velocity = 0;
+						}
+						
+						g_velocity = 0;
 					}
 					
 					
@@ -319,17 +335,12 @@ void Player::OnHitCollision(GameObject* hit_object)
 			else
 			{
 				this->location.x += -dv.x;
-				if (target_collision.object_type == eEnemy)
+				/*if (target_collision.object_type == eEnemy)
 				{
 					state = die;
-				}
+				}*/
 			}
 		}
-	}
-
-	if (target_collision.object_type == eItem)
-	{
-		p_state = get;
 	}
 
 }

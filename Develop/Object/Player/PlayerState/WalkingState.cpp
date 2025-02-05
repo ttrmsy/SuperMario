@@ -36,7 +36,7 @@ void WalkingState::Initialize()
 	
 }
 
-void WalkingState::Update()
+void WalkingState::Update(float delta_seconde)
 {
 	eInputState input_a, input_d;
 	input_a = input->GetKeyState(KEY_INPUT_A);
@@ -49,7 +49,7 @@ void WalkingState::Update()
 			if (speed >= 0)
 			{
 				player->Set_SlideFlag(TRUE);
-				speed += -0.2;
+				speed += -0.2/* * delta_seconde*/;
 			}
 			else
 			{
@@ -58,7 +58,7 @@ void WalkingState::Update()
 
 			if (speed > -6)
 			{
-				speed += (float)6 / 60 * -1;
+				speed += (float)6 / 60 * -1 /** delta_seconde*/;
 			}
 			player->Set_Velocity(Vector2D(speed, player->Get_Velocity().y));
 		}
@@ -74,7 +74,7 @@ void WalkingState::Update()
 			if (speed <= 0)
 			{
 				player->Set_SlideFlag(TRUE);
-				speed += 0.2;
+				speed += 0.2/* * delta_seconde*/;
 			}
 			else
 			{
@@ -83,7 +83,7 @@ void WalkingState::Update()
 
 			if (speed < 6)
 			{
-				speed += (float)6 / 60;
+				speed += (float)6 / 60 /** delta_seconde*/;
 			}
 			player->Set_Velocity(Vector2D(speed, player->Get_Velocity().y));
 		}
@@ -104,7 +104,7 @@ void WalkingState::Update()
 	{
 		if (speed > 0)
 		{
-			speed += (float)-4 / 30;
+			speed += (float)-4 / 30 /** delta_seconde*/;
 			if (speed < 1.0e-6f)
 			{
 				speed = 0;
@@ -113,7 +113,7 @@ void WalkingState::Update()
 		}
 		else
 		{
-			speed += (float)4 / 30;
+			speed += (float)4 / 30/* * delta_seconde*/;
 			if (speed > -1.0e-6f)
 			{
 				speed = 0;
