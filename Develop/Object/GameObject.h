@@ -6,6 +6,13 @@
 
 #define OBJECT_SIZE	(32.0f)
 
+enum State
+{
+	live,
+	down,
+	die
+};
+
 class GameObject
 {
 protected:
@@ -17,6 +24,7 @@ protected:
 	bool filp_flag;
 	bool hit_flag;
 	class Player* player;
+	State state;
 
 public:
 	virtual void Initialize();
@@ -28,6 +36,7 @@ public:
 	virtual const Vector2D& GetLocation() const;
 	void SetLocation(const Vector2D location);
 	virtual const Collision& GetCollision() const;
+	virtual const State& Get_State()const;
 	virtual const unsigned char GetZLayer() const;
 	virtual const bool GetMobility() const;
 };

@@ -26,11 +26,6 @@ const bool Character:: GetMobility() const
 	return is_mobility;
 }
 
-const State Character::GetState()
-{
-	return state;
-}
-
 void Character::Set_Hitflag(bool flag)
 {
 	hit_flag = flag;

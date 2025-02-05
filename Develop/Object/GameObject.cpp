@@ -78,6 +78,12 @@ const Collision& GameObject::GetCollision() const
 	return collision;
 }
 
+const State& GameObject::Get_State()const 
+{
+	return state;
+}
+
+
 /// <summary>
 /// ZƒŒƒCƒ„[î•ñæ“¾ˆ—
 /// </summary>
