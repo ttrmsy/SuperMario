@@ -57,6 +57,7 @@ void Kuribo::Update(float delta_seconde)
 		image = move_animation[2];
 		GameObjectManager* m = GameObjectManager::GetInstance();
 
+		//“¥‚Ü‚ê‚½Œã‚Ìˆ—
 		die_time += delta_seconde;
 		if (die_time <= 60.0f)
 		{
@@ -64,10 +65,9 @@ void Kuribo::Update(float delta_seconde)
 			if (die_count >= 30)
 			{
 				m->DestroyGameObject(this);
-
+				die_count = 0;
 			}
 		}		
-		die_time++;
 
 		break;
 	}
