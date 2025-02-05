@@ -25,16 +25,26 @@ void Mushroom::Initialize()
 	z_layer = 4;
 
 	//可動性の設定
-	is_mobility = false;
+	is_mobility = true;
 
 	//オブジェクトのタイプ設定
 	item_type = eMushroom;
+
+	//アイテムが出てきた時の音を流す
+	PlaySoundMem(item_sound, DX_PLAYTYPE_BACK);
 }
 
 //更新処理
 void Mushroom::Update(float delta_seconde)
 {
+	//ハコから出てくる処理
 	ItemPush();
+
+	//移動処理
+	Movement(delta_seconde);
+
+	velocity.x = 2.0f;
+
 }
 
 //描画処理

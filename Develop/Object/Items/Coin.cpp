@@ -1,4 +1,5 @@
 #include "Coin.h"
+#include "../GameObjectManager.h"
 #include "../../Utility/ResourceManager.h"
 
 Coin::Coin()
@@ -15,6 +16,7 @@ void Coin::Initialize()
 {
 	ResourceManager* rm = ResourceManager::GetInstance();
 	move_animation = rm->GetImageResource("Resource/Images/Item/coin.png", 4, 4, 1, 32, 32);
+	item_sound = rm->GetSoundResource("Resource/Sounds/SE_CoinPickUp.wav");
 
 	collision.object_type = eItem;
 	collision.hit_object_type.push_back(eObjectType::ePlayer);
@@ -35,11 +37,26 @@ void Coin::Initialize()
 
 	//オブジェクトのタイプ設定
 	item_type = eCoin;
+
+	//アイテムが出てきた時の音を流す
+	PlaySoundMem(item_sound, DX_PLAYTYPE_BACK);
 }
 
 void Coin::Update(float delta_seconde)
 {
+	ItemPush();
+
 	AnimationControl(delta_seconde);
+
+	if (box_out == true)
+	{
+		//ゲームオブジェクトのポインタを取得
+		GameObjectManager* gm_p = GameObjectManager::GetInstance();
+
+		//PlaySoundMem(item_sound, DX_PLAYTYPE_BACK);
+
+		gm_p->DestroyGameObject(this);
+	}
 }
 
 void Coin::Draw(const Vector2D& screen_offset) const
