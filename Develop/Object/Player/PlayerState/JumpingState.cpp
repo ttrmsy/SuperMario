@@ -37,12 +37,12 @@ void JumpingState::Update()
 	input_a = input->GetKeyState(KEY_INPUT_A);
 	input_d = input->GetKeyState(KEY_INPUT_D);
 
-	/*if (input_a == eInputState::Pressed || input_a == eInputState::Held)
+	if (input_a == eInputState::Pressed || input_a == eInputState::Held)
 	{
 		if (input_d != eInputState::Pressed && input_d != eInputState::Held)
 		{
 			j_velocity = player->Get_Velocity();
-			j_velocity.x += -0.1;
+			j_velocity.x += -0.15;
 			player->Set_Velocity(j_velocity);
 		}
 
@@ -58,7 +58,7 @@ void JumpingState::Update()
 			player->Set_Velocity(j_velocity);
 		}
 
-	}*/
+	}
 
 	
 

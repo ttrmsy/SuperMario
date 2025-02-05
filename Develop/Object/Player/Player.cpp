@@ -4,7 +4,7 @@
 #include "../../Utility/Application.h"
 #include "DxLib.h"
 #include "../GameObjectManager.h"
-
+#include "../../Utility/InputManager.h"
 
 #define D_GRAVITY (9.807f)		//重力加速度
 #define P_SPEED (50.0f)
@@ -16,14 +16,14 @@ void Player::Initialize()
 
 	ResourceManager* rm = ResourceManager::GetInstance();
 	move_animation = rm->GetImageResource("Resource/Images/Mario/mario.png", 9, 9, 1, 32, 32);
-
+	levelup_animation = rm->GetImageResource("Resource/Images/Mario/dekamarimation.png", 3, 3, 1, 32, 64);
 	collision.is_blocking = true;
 	collision.object_type = eObjectType::ePlayer;
 	collision.hit_object_type.push_back(eObjectType::eBlock);
 	collision.hit_object_type.push_back(eObjectType::eEnemy);
 	collision.hit_object_type.push_back(eObjectType::eGround);
 	collision.hit_object_type.push_back(eObjectType::eItem);
-	collision.box_size = Vector2D(OBJECT_SIZE,OBJECT_SIZE);
+	collision.box_size = Vector2D(31,31);
 
 	//レイヤー設定
 	z_layer = 5;
@@ -31,8 +31,9 @@ void Player::Initialize()
 	//可動性の設定
 	is_mobility = true;
 
-	//アニメーション画像の設定
-	image = move_animation[0];
+	image = move_animation[0];	//アニメーション画像の設定
+	animation_time = 0;			//アニメーションの時間
+	animation_number = 0;		//アニメーション配列の添え字
 
 	//画像反転フラグの設定
 	filp_flag = FALSE;	
@@ -64,14 +65,26 @@ void Player::Update(float delta_seconde)
 	//ePlayerState p_state;
 	slide_flag = false;
 
-	
-	if (next_state != ePlayerState::none)
+	if (p_state != get)
 	{
-		player_state = PlayerStateFactory::Get((*this), next_state);
-		next_state = ePlayerState::none;
+		if (next_state != ePlayerState::none)
+		{
+			player_state = PlayerStateFactory::Get((*this), next_state);
+			next_state = ePlayerState::none;
+		}
+
+		p_state = GetPlayerState();
 	}
 
-	p_state = GetPlayerState();
+	
+
+	InputManager* input = InputManager::GetInstance();
+
+	if (input->GetKeyState(KEY_INPUT_Z) == eInputState::Pressed || input->GetKeyState(KEY_INPUT_Z) == eInputState::Held)
+	{
+		p_state = none;
+	}
+
 
 	//プレイヤーの状態で、処理を変える
 	if (state == live)
@@ -95,6 +108,12 @@ void Player::Update(float delta_seconde)
 			image = move_animation[5];
 			break;
 
+		case ePlayerState::get:
+			velocity = 0;
+			/*GetItem_Animation(delta_seconde);*/
+			/*image = levelup_animation[2];*/
+			break;
+
 		default:
 			break;
 		}
@@ -102,12 +121,12 @@ void Player::Update(float delta_seconde)
 	else if(state == die)
 	{
 		image = move_animation[6];
-
-		GameObjectManager* m = GameObjectManager::GetInstance();
-		m->DestroyGameObject(this);
-
 	}
 
+	if (input->GetKeyState(KEY_INPUT_Z) == eInputState::Held)
+	{
+		GetItem_Animation(delta_seconde);
+	}
 	
 	if (is_ground == false)
 	{
@@ -121,7 +140,7 @@ void Player::Update(float delta_seconde)
 
 	
 
-	if (hit_flag == false && p_state != jump)
+	if (hit_flag == false && p_state != jump && p_state != none)
 	{
 		velocity.y = 6;
 		jump_flag = false;
@@ -158,7 +177,7 @@ void Player::Draw(const Vector2D& screen_offset) const
 	Vector2D ul = location - (collision.box_size / 2);
 	Vector2D br = location + (collision.box_size / 2);
 	DrawBoxAA(ul.x - screen_offset.x, ul.y, br.x - screen_offset.x, br.y, GetColor(255, 0, 0), FALSE);
-
+	DrawCircle(this->location.x, this->location.y, 3, GetColor(255, 0, 0));
 	DrawFormatString(10, 30, 0xffffff, "%f", this->location.y, TRUE);
 	DrawFormatString(10, 10, 0xffffff, "%d", is_death, TRUE);
 }
@@ -201,10 +220,10 @@ void Player::OnHitCollision(GameObject* hit_object)
 			else
 			{
 				this->location.x += dv.x;
-				/*if (target_collision.object_type == eEnemy)
+				if (target_collision.object_type == eEnemy)
 				{
 					state = die;
-				}*/
+				}
 			}
 			
 			
@@ -223,7 +242,7 @@ void Player::OnHitCollision(GameObject* hit_object)
 					
 					if (target_collision.object_type == eGround || target_collision.object_type == eBlock)
 					{
- 						is_ground = true;
+						is_ground = true;
 						jump_flag = true;
 						g_velocity = 0;
 					}
@@ -280,9 +299,9 @@ void Player::OnHitCollision(GameObject* hit_object)
 					
 					if (target_collision.object_type == eGround || target_collision.object_type == eBlock)
 					{
-						is_ground = true;
-						jump_flag = true;
-						g_velocity = 0;
+							is_ground = true;
+							jump_flag = true;
+							g_velocity = 0;
 					}
 					
 					
@@ -300,14 +319,18 @@ void Player::OnHitCollision(GameObject* hit_object)
 			else
 			{
 				this->location.x += -dv.x;
-				/*if (target_collision.object_type == eEnemy)
+				if (target_collision.object_type == eEnemy)
 				{
 					state = die;
-				}*/
+				}
 			}
 		}
 	}
 
+	if (target_collision.object_type == eItem)
+	{
+		p_state = get;
+	}
 
 }
 
@@ -386,7 +409,7 @@ void Player::AnimationControl(float delta_second)
 	{
 		animation_time = 0.0f;
 	
-		image = move_animation[animation_num[animation_count]];
+		image = move_animation[animation_num[0][animation_count]];
 
 		if (slide_flag == true)
 		{
@@ -402,8 +425,57 @@ void Player::AnimationControl(float delta_second)
 		
 	}
 
-	
+}
 
+void Player::GetItem_Animation(float delta_seconde)
+{
+	animation_time += delta_seconde;
+
+
+	if (animation_time >=  (1.0f / 24.0f))
+	{
+		animation_time = 0.0f;
+
+		
+		if (animation_number == 0 && animation_count == 0)
+		{
+			this->location.y += -16;
+		}
+
+		if (animation_count <= 1)
+		{
+
+			image = levelup_animation[animation_num[1][animation_number]];
+			animation_number++;
+
+			
+			if (animation_number >= 2)
+			{
+				animation_number = 0;
+				animation_count++;
+			}
+		}
+		else if (animation_count <= 3)
+		{
+			image = levelup_animation[animation_num[2][animation_number]];
+			animation_number++;
+			
+
+			if (animation_number >= 3)
+			{
+				animation_number = 0;
+				animation_count++;
+			}
+		}
+		else
+		{
+			animation_number = 0;
+			animation_count = 0;
+			this->location.y += 16;
+			p_state = idle;
+		}
+
+	}
 }
 
 

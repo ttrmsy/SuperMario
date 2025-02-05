@@ -9,6 +9,7 @@ enum ePlayerState
 	idle,
 	walk,
 	jump,
+	get,
 	none
 };
 
@@ -26,10 +27,12 @@ private:
 	std::vector<int> BigMario_animation;
 	std::vector<int> FireMario_animation;*/
 	std::vector<int> move_animation;	//Player画像
+	std::vector<int> levelup_animation;	//アイテム取得時のアニメーション画像
 	class PlayerStateBase* player_state;	//Playerの状態
 	ePlayerState next_state;	//Playerの遷移先状態
 	float animation_time;		//アニメーションの時間
 	int animation_count;		//アニメーションの回数
+	int animation_number;		//アニメーション配列の添え字
 	float g_velocity;			//重力
 	bool is_ground;
 	float x;
@@ -43,18 +46,20 @@ private:
 public:
 	bool jump_flag;
 	bool slide_flag;
-	int animation_num[3] = { 1, 2, 3};	//アニメーションの順番
-
+	int animation_num[3][3] = { { 1, 2, 3},
+								{ 0, 1, 0},
+								{ 0, 1, 2}};	//アニメーションの順番
+								
 public:
-	virtual void Initialize() override;
-	virtual void Update(float delta_seconde) override;
-	virtual void Draw(const Vector2D& screen_offset) const override;
-	virtual void Finalize() override;
-	virtual void OnHitCollision(GameObject* hit_object) override;
-	virtual const Collision& GetCollision() const override;
-	virtual const unsigned char GetZLayer() const override;
-	virtual const bool GetMobility() const override;
-	ePlayerState GetPlayerState() const;
+	virtual void Initialize() override;									//初期化処理
+	virtual void Update(float delta_seconde) override;					//更新処理
+	virtual void Draw(const Vector2D& screen_offset) const override;	//描画処理
+	virtual void Finalize() override;									//終了処理
+	virtual void OnHitCollision(GameObject* hit_object) override;		//当たり判定処理
+	virtual const Collision& GetCollision() const override;				//コリジョン取得処理
+	virtual const unsigned char GetZLayer() const override;				//Zレイヤー取得処理
+	virtual const bool GetMobility() const override;					//可動性取得処理
+	ePlayerState GetPlayerState() const;								//Player状態取得処理
 	void SetNextState(ePlayerState next_state);
 	void SetFilp_flag(bool flag);
 	bool GetFilp_flag();
@@ -67,7 +72,8 @@ public:
 
 private:
 	void Movement(float delta_second);
-	void AnimationControl(float delta_second);
+	void AnimationControl(float delta_seconde);
+	void GetItem_Animation(float delta_seconde);
 	void DeathCount();
 
 
