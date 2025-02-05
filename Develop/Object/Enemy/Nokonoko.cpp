@@ -274,6 +274,7 @@ const Collision& Nokonoko::GetCollision() const
 {
 	return collision;
 }
+
 const unsigned char Nokonoko::GetZLayer() const
 {
 	return z_layer;

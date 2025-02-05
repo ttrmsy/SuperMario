@@ -24,6 +24,7 @@ public:
 	virtual const Collision& GetCollision() const override;
 	virtual const unsigned char GetZLayer() const override;
 	virtual const bool GetMobility() const override;
+
 	void Filp_flag(bool flag);
 	void Set_Velocity(Vector2D velocity);
 	void Set_Camera(Camera* c);

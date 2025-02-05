@@ -23,7 +23,11 @@ void InGameScene::Initialize()
 	ResourceManager* rm = ResourceManager::GetInstance();
 	UI_num = rm->GetImageResource("Resource/Images/UI/num.png", 15, 15, 1, 16, 16);
 	UI_string = rm->GetImageResource("Resource/Images/UI/string.png", 26, 26, 1, 16, 16);
+	UI_time = rm->GetImageResource("Resource/Images/UI/num.png", 15, 15, 1, 16, 16);
+
 	num_image = UI_num[0];
+	num_time = UI_num[5];
+	num_world = UI_num[0];
 
 	//BGMÇÃÉãÅ[Évçƒê∂
 	PlayMusic("Resource/Sounds/BGM_MarioGround.wav", DX_PLAYTYPE_LOOP);
@@ -77,6 +81,9 @@ eSceneType InGameScene::Update(float delta_second)
 
 	Draw();
 
+
+
+
 	return GetNowSceneType();
 }
 
@@ -84,6 +91,7 @@ void InGameScene::Draw() const
 {
 	DrawBackGroundCSV();
 
+	
 
 	LoadGraphScreen(88, 28, "Resource/Images/UI/name_mario.png", TRUE);
 	int x, y;
@@ -93,6 +101,26 @@ void InGameScene::Draw() const
 	{
 		DrawRotaGraphF(x, y, 1.0, 0.0, num_image, TRUE);
 		x += 16;
+	}
+
+	LoadGraphScreen(500, 28, "Resource/Images/UI/time.png", TRUE);
+	int a, b;
+	a = 520;
+	b = 55;
+	for (int i = 0; i < 3; i++)
+	{
+		DrawRotaGraphF(a, b, 1.0, 0.0, num_time, TRUE);
+		a += 16;
+
+	}
+
+	LoadGraphScreen(360, 28, "Resource/Images/UI/world.png", TRUE);
+	for (int i = 0; i < 3; i++)
+	a = 400;
+	b = 55;
+	{
+		DrawRotaGraphF(a, b, 1.0, 0.0, num_world, TRUE);
+		a += 16;
 	}
 
 	__super::Draw();
