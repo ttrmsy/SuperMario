@@ -2,7 +2,7 @@
 #include "../../../Utility/InputManager.h"
 #include "DxLib.h"
 
-#define JUMP_VECTOR (-10.0f)
+#define JUMP_VECTOR (-15.0f)
 #define D_GRAVITY (9.807f)		//�d�͉����x
 
 JumpingState::JumpingState(class Player* p)
@@ -41,6 +41,7 @@ void JumpingState::Update()
 	{
 		if (input_d != eInputState::Pressed && input_d != eInputState::Held)
 		{
+			j_velocity = player->Get_Velocity();
 			j_velocity.x += -0.1;
 			player->Set_Velocity(j_velocity);
 		}
@@ -52,6 +53,7 @@ void JumpingState::Update()
 	{
 		if (input_a != eInputState::Pressed && input_a != eInputState::Held)
 		{
+			j_velocity = player->Get_Velocity();
 			j_velocity.x += 0.1;
 			player->Set_Velocity(j_velocity);
 		}
@@ -64,7 +66,7 @@ void JumpingState::Update()
 	if (input->GetKeyState(KEY_INPUT_SPACE) == Held && Held_jump < 24)
 	{
 		j_velocity = player->Get_Velocity();
-		j_velocity.y += -0.5;
+		j_velocity.y += -0.2;
 		player->Set_Velocity(j_velocity);
 		Held_jump++;
 	}

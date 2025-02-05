@@ -49,6 +49,7 @@ void WalkingState::Update()
 			if (speed >= 0)
 			{
 				player->Set_SlideFlag(TRUE);
+				speed += -0.2;
 			}
 			else
 			{
@@ -57,7 +58,7 @@ void WalkingState::Update()
 
 			if (speed > -6)
 			{
-				speed += (float)4 / 60 * -1;
+				speed += (float)6 / 60 * -1;
 			}
 			player->Set_Velocity(Vector2D(speed, player->Get_Velocity().y));
 		}
@@ -73,6 +74,7 @@ void WalkingState::Update()
 			if (speed <= 0)
 			{
 				player->Set_SlideFlag(TRUE);
+				speed += 0.2;
 			}
 			else
 			{
@@ -81,7 +83,7 @@ void WalkingState::Update()
 
 			if (speed < 6)
 			{
-				speed += (float)4 / 60;
+				speed += (float)6 / 60;
 			}
 			player->Set_Velocity(Vector2D(speed, player->Get_Velocity().y));
 		}

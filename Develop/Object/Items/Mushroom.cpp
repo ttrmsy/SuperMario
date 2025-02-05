@@ -27,19 +27,17 @@ void Mushroom::Initialize()
 	//可動性の設定
 	is_mobility = false;
 
-	animation_count = 0;
-
-	animation_time = 0;
-
 	//オブジェクトのタイプ設定
-	item_type = eCoin;
+	item_type = eMushroom;
 }
 
+//更新処理
 void Mushroom::Update(float delta_seconde)
 {
-
+	ItemPush();
 }
 
+//描画処理
 void Mushroom::Draw(const Vector2D& screen_offset) const
 {
 	__super::Draw(screen_offset);

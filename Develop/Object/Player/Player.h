@@ -59,7 +59,7 @@ public:
 	void SetFilp_flag(bool flag);
 	bool GetFilp_flag();
 	Vector2D Get_Velocity();
-	void Set_Velocity(Vector2D velocity_x);
+	void Set_Velocity(Vector2D velocity);
 	void Set_IsGround(bool flag);
 	void Set_Camera(Camera* c);
 	void Set_SlideFlag(bool flag);

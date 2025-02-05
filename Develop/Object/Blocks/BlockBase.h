@@ -3,6 +3,8 @@
 
 class BlockBase : public GameObject
 {
+protected:
+	int block_sound;
 
 public:
 	virtual void Initialize() override
@@ -22,7 +24,7 @@ public:
 
 	virtual void Finalize() override
 	{
-
+		block_sound = NULL;
 	}
 
 	virtual void OnHitCollision(GameObject* hit_object) override
