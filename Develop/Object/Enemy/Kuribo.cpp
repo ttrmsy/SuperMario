@@ -1,5 +1,7 @@
 #include "Kuribo.h"
 #include "../../Utility/ResourceManager.h"
+#include "../GameObjectManager.h"
+
 
 #define D_GRAVITY (9.807f)		//èdóÕâ¡ë¨ìx
 #define SPEED (30)
@@ -53,6 +55,18 @@ void Kuribo::Update(float delta_seconde)
 	case die:
 		//is_mobility = false;
 		image = move_animation[2];
+		GameObjectManager* m = GameObjectManager::GetInstance();
+
+		die_time += delta_seconde;
+		if (die_time <= 60.0f)
+		{
+			 die_count++;
+			if (die_count >= 30)
+			{
+				m->DestroyGameObject(this);
+
+			}
+		}		
 		die_time++;
 
 		break;
@@ -68,6 +82,7 @@ void Kuribo::Draw(const Vector2D& screen_offset) const
 	Vector2D ul = location - (collision.box_size / 2);
 	Vector2D br = location + (collision.box_size / 2);
 	DrawBoxAA(ul.x, ul.y, br.x, br.y, GetColor(255, 0, 0), FALSE);
+	DrawFormatString(100, 10, GetColor(255, 255, 255), "%f", die_time, true);
 }
 
 void Kuribo::Finalize()
@@ -85,6 +100,9 @@ void Kuribo::OnHitCollision(GameObject* hit_object)
 
 	target_boxsize = hit_object->GetCollision().box_size;
 	this_boxsize = this->collision.box_size;
+	Collision target_collision = hit_object->GetCollision();
+
+
 
 	//2ì_ä‘ÇÃãóó£ÇãÅÇﬂÇÈ
 	diff = this->location - target_location;
@@ -125,8 +143,12 @@ void Kuribo::OnHitCollision(GameObject* hit_object)
 				}
 				else
 				{
-					state = die;
-					PlaySound("Resource/Sounds/Se_StepOn.wav", DX_PLAYTYPE_BACK);
+					if (target_collision.object_type == ePlayer)
+					{
+						velocity.x = 0;
+						state = die;
+						PlaySound("Resource/Sounds/Se_StepOn.wav", DX_PLAYTYPE_BACK);
+					}
 				}
 
 			}
@@ -186,9 +208,12 @@ void Kuribo::OnHitCollision(GameObject* hit_object)
 				}
 				else
 				{
-					velocity.x = 0;
-					state = die;
-					PlaySound("Resource/Sounds/Se_StepOn.wav", DX_PLAYTYPE_BACK);
+					if (target_collision.object_type == ePlayer)
+					{
+						velocity.x = 0;
+						state = die;
+						PlaySound("Resource/Sounds/Se_StepOn.wav", DX_PLAYTYPE_BACK);
+					}
 				}
 
 			}

@@ -11,6 +11,7 @@ private:
 	float animation_time;
 	float g_velocity;			//d—Í
 	bool is_ground;				//’nã
+	int die_count = 0;
 	Camera* camera;
 	class Player* player;
 
