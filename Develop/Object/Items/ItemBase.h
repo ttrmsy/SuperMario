@@ -1,6 +1,8 @@
 #pragma once
 #include "../Character.h"
 
+#define D_GRAVITY (9.807f)		//重力加速度
+
 enum Items
 {
 	eNull,
@@ -21,6 +23,9 @@ protected:
 	Vector2D old_loction;		//初期座標
 	bool box_out;				//ボックスから完全に出ているか
 	int item_sound;			//アイテム取得sound
+	bool is_ground;
+	bool hit_flag;
+	float g_velocity;
 
 public:
 	ItemBase();
