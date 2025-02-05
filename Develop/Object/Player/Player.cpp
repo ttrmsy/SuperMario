@@ -300,12 +300,12 @@ void Player::OnHitCollision(GameObject* hit_object)
 			else
 			{
 				this->location.x += -dv.x;
-				/*if (target_collision.object_type == eEnemy)
+				if (target_collision.object_type == eEnemy)
 				{
 					state = die;
-				}*/
-			}
+				}
 		}
+			}
 	}
 
 

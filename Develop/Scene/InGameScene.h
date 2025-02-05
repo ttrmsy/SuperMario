@@ -13,13 +13,20 @@ private:
 	int leaf_image[3];	//‘‚Ì”wŒi‰æ‘œŠi”\”z—ñ
 	int cloud_image[6];
 	int mountain_image[6];
+	int coin_image[1];
 	Player* p;
 
 
 
 	std::vector<int> UI_num;
 	std::vector<int> UI_string;
+	std::vector<int>UI_time;
 	int num_image;
+	int num_time;
+	int num_world;
+	int time_set;
+	int time_add;
+	int now_count;
 
 public:
 	virtual void Initialize() override;
