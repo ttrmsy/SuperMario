@@ -54,6 +54,7 @@ void Kuribo::Update(float delta_seconde)
 		//is_mobility = false;
 		image = move_animation[2];
 		die_time++;
+
 		break;
 	}
 
@@ -76,44 +77,58 @@ void Kuribo::Finalize()
 
 void Kuribo::OnHitCollision(GameObject* hit_object)
 {
-	hit_flag = true;
-
-	Vector2D diff; //dv;
+	Vector2D diff, dv;
 	Vector2D target_boxsize, this_boxsize;
 	diff = 0.0f;
 	dv = 0.0f;
 	Vector2D target_location = hit_object->GetLocation();
-	Collision target_collision = hit_object->GetCollision();
 
 	target_boxsize = hit_object->GetCollision().box_size;
 	this_boxsize = this->collision.box_size;
 
-
 	//2点間の距離を求める
 	diff = this->location - target_location;
 
-	if (diff.x > 0)	//自身がHitしたオブジェクトよりも右側にいたとき
+	//自身がHitしたオブジェクトよりも右側にいたとき
+	if (diff.x > 0)
 	{
-		if (diff.y > 0)	//自身がHitしたオブジェクトよりも下側にいたとき
+		//自身がHitしたオブジェクトよりも下側にいたとき
+		if (diff.y > 0)
 		{
-			dv.x = (target_location.x + target_boxsize.x / 2) - (this->location.x - this_boxsize.x / 2);
-			dv.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
-
-			state = die;
-			PlaySound("Resource/Sounds/Se_StepOn.wav", DX_PLAYTYPE_BACK);
-
-			if (dv.x > dv.y)
+			if (state == die)
 			{
-				this->location.y += dv.y;
+				dv.x = (target_location.x + target_boxsize.x / 2) - (this->location.x - this_boxsize.x / 2);
+				dv.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
+
+				if (dv.x > dv.y)
+				{
+					if (state != die)
+					{
+						this->location.y += dv.y;
+					}
+
+				}
+				else
+				{
+					if (state != die)
+					{
+						this->location.x += dv.x;
+					}
+				}
 			}
-			else
-			{
-				this->location.x += dv.x;
-			}
 
-			if (velocity.y < 0)
+			if (hit_object->GetCollision().object_type == ePlayer)
 			{
-				velocity.y = 0;
+				if (this->state == die)
+				{
+					this->velocity.x = 6;
+				}
+				else
+				{
+					state = die;
+					PlaySound("Resource/Sounds/Se_StepOn.wav", DX_PLAYTYPE_BACK);
+				}
+
 			}
 
 		}
@@ -124,57 +139,58 @@ void Kuribo::OnHitCollision(GameObject* hit_object)
 
 			if (dv.x > dv.y)
 			{
-				if (target_collision.object_type != eEnemy)
-				{
-					this->location.y += -dv.y;
-
-					if (target_collision.object_type == eGround)
-					{
-						is_ground = true;
-						g_velocity = 0;
-					}
-
-
-
-				}
-				else
-				{
-					if (hit_object->GetMobility() == true)
-					{
-						velocity.y = 0;
-						velocity.y += -20.0;
-					}
-				}
-
+				this->location.y += -dv.y;
 			}
 			else
 			{
+
 				this->location.x += dv.x;
+			}
+
+			if (hit_object->GetCollision().object_type == eGround)
+			{
+				is_ground = true;
+				g_velocity = 0;
+				this->velocity.y = 0;
 			}
 		}
 	}
 	else	//自身がHitしたオブジェクトよりも左側にいたとき
 	{
-		if (diff.y > 0)	//自身がHitしたオブジェクトよりも下側にいたとき
+		//自身がHitしたオブジェクトよりも下側にいたとき
+		if (diff.y > 0)
 		{
+
 			dv.x = (this->location.x + this_boxsize.x / 2) - (target_location.x - target_boxsize.x / 2);
 			dv.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
 
-			state = die;
-			PlaySound("Resource/Sounds/Se_StepOn.wav", DX_PLAYTYPE_BACK);
-
 			if (dv.x > dv.y)
 			{
-				this->location.y += dv.y;
+				if (state != die)
+				{
+					this->location.y += dv.y;
+				}
 			}
 			else
 			{
 				this->location.x += -dv.x;
 			}
 
-			if (velocity.y < 0)
+
+
+			if (hit_object->GetCollision().object_type == ePlayer)
 			{
-				velocity.y = 0;
+				if (this->state == die)
+				{
+					this->velocity.x = -3;
+				}
+				else
+				{
+					velocity.x = 0;
+					state = die;
+					PlaySound("Resource/Sounds/Se_StepOn.wav", DX_PLAYTYPE_BACK);
+				}
+
 			}
 		}
 		else	//自身がHitしたオブジェクトよりも上側にいたとき
@@ -184,32 +200,38 @@ void Kuribo::OnHitCollision(GameObject* hit_object)
 
 			if (dv.x > dv.y)
 			{
-				if (target_collision.object_type != eEnemy)
+				if (state != die)
 				{
 					this->location.y += -dv.y;
-
-
-					if (target_collision.object_type == eGround)
-					{
-						is_ground = true;
-						g_velocity = 0;
-					}
-
-
-				}
-				else
-				{
-					if (hit_object->GetMobility() == true)
-					{
-						velocity.y = 0;
-						velocity.y += -20.0;
-					}
 				}
 
 			}
 			else
 			{
-				this->location.x += -dv.x;
+				if (state != die)
+				{
+					this->location.x += -dv.x;
+				}
+			}
+
+			if (hit_object->GetCollision().object_type == eGround)
+			{
+				is_ground = true;
+				g_velocity = 0;
+				this->velocity.y = 0;
+			}
+
+
+			if (hit_object->GetCollision().object_type == ePlayer)
+			{
+				if (this->state == die)
+				{
+					this->velocity.x = -3;
+				}
+				else
+				{
+					velocity.x = 0;
+				}
 			}
 		}
 	}
@@ -254,6 +276,7 @@ void Kuribo::Set_Camera(Camera* c)
 {
 	camera = c;
 }
+
 
 void Kuribo::Movement(float delta_seconde)
 {
