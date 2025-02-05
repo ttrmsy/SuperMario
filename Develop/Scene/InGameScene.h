@@ -8,6 +8,7 @@ class InGameScene : public SceneBase
 {
 private:
 	class GameObjectManager* objm;
+
 	int sky_image;	//‹ó‚Ì”wŒi‰æ‘œ
 	int leaf_image[3];	//‘‚Ì”wŒi‰æ‘œŠi”\”z—ñ
 	int cloud_image[6];

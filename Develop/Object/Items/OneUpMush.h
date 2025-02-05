@@ -19,10 +19,8 @@ public:
 	virtual void Draw(const Vector2D& screen_offset) const override;
 
 	//終了時処理
-	virtual void Finalize() override;
+	//virtual void Finalize() override;
 
 private:
 
-	//アニメーション処理
-	void AnimationControl(float delta_second);
 };

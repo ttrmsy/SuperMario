@@ -34,11 +34,16 @@ void Flower::Initialize()
 	animation_time = 0;
 
 	//オブジェクトのタイプ設定
-	item_type = eCoin;
+	item_type = eFlower;
+
+	//アイテムが出てきた時の音を流す
+	PlaySoundMem(item_sound, DX_PLAYTYPE_BACK);
 }
 
 void Flower::Update(float delta_seconde)
 {
+	ItemPush();
+
 	AnimationControl(delta_seconde);
 }
 

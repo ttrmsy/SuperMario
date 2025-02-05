@@ -6,7 +6,7 @@ enum Items
 	eNull,
 	eCoin,
 	eMushroom,
-	wFlower,
+	eFlower,
 	eOneup,
 	eStar
 };
@@ -32,7 +32,7 @@ public:
 
 
 	//移動処理
-	virtual void Movement();
+	virtual void Movement(float delta_seconde);
 
 	//アイテムが出てくる処理
 	void ItemPush();
