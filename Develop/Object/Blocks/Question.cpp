@@ -68,6 +68,7 @@ void Question::Finalize()
 
 }
 
+//当たり判定処理
 void Question::OnHitCollision(GameObject* hit_object)
 {
 	Vector2D diff = 0.0f;
@@ -99,7 +100,7 @@ void Question::OnHitCollision(GameObject* hit_object)
 			lc_handover.y -= 5.0f;
 
 			//キノコを生成する
-			gm_p->CreateGameObject<Coin>(lc_handover)->SetOldLocation(lc_handover);
+			gm_p->CreateGameObject<Flower>(lc_handover)->SetOldLocation(lc_handover);
 		}
 	}
 }
@@ -123,6 +124,7 @@ const bool Question::GetMobility() const
 	return is_mobility;
 }
 
+//アニメーション処理
 void Question::AnimationControl(float delta_seconde)
 {
 	animation_time += delta_seconde;
