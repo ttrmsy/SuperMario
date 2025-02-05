@@ -2,6 +2,9 @@
 #include "../../Utility/ResourceManager.h"
 #include "../../Utility/Singleton.h"
 #include "../Items/Mushroom.h"
+#include "../Items/Flower.h"
+#include "../Items/OneUpMush.h"
+#include "../Items/Coin.h"
 #include "DxLib.h"
 
 #include "../GameObjectManager.h"
@@ -74,7 +77,6 @@ void Question::OnHitCollision(GameObject* hit_object)
 	//2点間の距離を求める
 	diff = this->location - target_location;
 
-
 	if (diff.y < 0)
 	{
 		//当たったオブジェクトがマリオで画像が空のブロックではない時
@@ -92,8 +94,12 @@ void Question::OnHitCollision(GameObject* hit_object)
 			//ヒットフラグをtrueにする
 			hit_flag = true;
 
+			Vector2D lc_handover = location;
+
+			lc_handover.y -= 5.0f;
+
 			//キノコを生成する
-			gm_p->CreateGameObject<Mushroom>(this->location)->SetOldLocation(this->location);
+			gm_p->CreateGameObject<Coin>(lc_handover)->SetOldLocation(lc_handover);
 		}
 	}
 }
