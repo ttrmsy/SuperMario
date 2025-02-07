@@ -15,8 +15,8 @@ class Brick : public BlockBase
 
 private:
 	std::vector<int> block_image;
-	bool up_count;
-	bool down_count;
+	float up_count;
+	float down_count;
 	void AnimationControl(float delta_seconde);
 	float animation_time;
 	int animation_count;

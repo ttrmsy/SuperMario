@@ -59,6 +59,10 @@ void Mushroom::Update(float delta_seconde)
 void Mushroom::Draw(const Vector2D& screen_offset) const
 {
 	__super::Draw(screen_offset);
+
+	Vector2D ul = location - (collision.box_size / 2);
+	Vector2D br = location + (collision.box_size / 2);
+	DrawBoxAA(ul.x - screen_offset.x, ul.y, br.x - screen_offset.x, br.y, GetColor(255, 0, 0), FALSE);
 }
 
 void Mushroom::Finalize()
