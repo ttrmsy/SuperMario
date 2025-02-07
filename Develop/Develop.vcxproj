@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Object\Player\FireBall.cpp" />
     <ClCompile Include="Object\Goal\GoalFlag.cpp" />
     <ClCompile Include="Object\BackGround\Mountain.cpp" />
     <ClCompile Include="Object\BackGround\Leaf.cpp" />
@@ -170,6 +171,7 @@
     <ClCompile Include="Object\Player\PlayerState\WalkingState.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Object\Player\FireBall.h" />
     <ClInclude Include="Object\Goal\GoalFlag.h" />
     <ClInclude Include="Object\BackGround\Mountain.h" />
     <ClInclude Include="Object\BackGround\Leaf.h" />

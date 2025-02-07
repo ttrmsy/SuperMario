@@ -78,7 +78,7 @@ void Application::UpdateDeLtaTime()
 	start_time = now_time;
 
 	//リフレッシュレートを取得する
-	refresh_rate = (int)GetRefreshRate();
+	refresh_rate = (float)GetRefreshRate();
 
 	//１フレームあたり時間が1/refresh_rate秒を超えたら調整する
 	if (delta_second > (1.0f / refresh_rate))

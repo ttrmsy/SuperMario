@@ -15,6 +15,7 @@ void Ground::Initialize()
 	collision.hit_object_type.push_back(ePlayer);
 	collision.hit_object_type.push_back(eEnemy);
 	collision.hit_object_type.push_back(eItem);
+	collision.hit_object_type.push_back(eFireBall);
 
 	collision.box_size = Vector2D(32, 32);
 
