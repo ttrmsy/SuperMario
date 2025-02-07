@@ -5,7 +5,8 @@
 #include "DxLib.h"
 #include "../GameObjectManager.h"
 #include "../../Utility/InputManager.h"
-#include "../Enemy/Nokonoko.h"
+#include "../GameObjectManager.h"
+#include "FireBall.h"
 
 #define D_GRAVITY (9.807f)		//重力加速度
 #define P_SPEED (50.0f)
@@ -14,9 +15,12 @@ void Player::Initialize()
 {
 	player_state = PlayerStateFactory::Get((*this), ePlayerState::idle);
 	next_state = none;
+	p_level = Fire;
 
 	ResourceManager* rm = ResourceManager::GetInstance();
-	move_animation = rm->GetImageResource("Resource/Images/Mario/mario.png", 9, 9, 1, 32, 32);
+	SmallMario_animation = rm->GetImageResource("Resource/Images/Mario/mario.png", 9, 9, 1, 32, 32);
+	BigMario_animation = rm->GetImageResource("Resource/Images/Mario/dekamario.png", 10, 10, 1, 32, 64);
+	FireMario_animation = rm->GetImageResource("Resource/Images/Mario/faiyamario.png", 9, 9, 1, 32, 64);
 	levelup_animation = rm->GetImageResource("Resource/Images/Mario/dekamarimation.png", 3, 3, 1, 32, 64);
 	collision.is_blocking = true;
 	collision.object_type = eObjectType::ePlayer;
@@ -24,7 +28,7 @@ void Player::Initialize()
 	collision.hit_object_type.push_back(eObjectType::eEnemy);
 	collision.hit_object_type.push_back(eObjectType::eGround);
 	collision.hit_object_type.push_back(eObjectType::eItem);
-	collision.box_size = Vector2D(32,32);
+	collision.box_size = Vector2D(32,64);
 
 	//レイヤー設定
 	z_layer = 5;
@@ -32,7 +36,7 @@ void Player::Initialize()
 	//可動性の設定
 	is_mobility = true;
 
-	image = move_animation[0];	//アニメーション画像の設定
+	image = SmallMario_animation[0];	//アニメーション画像の設定
 	animation_time = 0;			//アニメーションの時間
 	animation_number = 0;		//アニメーション配列の添え字
 
@@ -77,14 +81,14 @@ void Player::Update(float delta_seconde)
 		p_state = GetPlayerState();
 	}
 
-	
+	GameObjectManager* objm = GameObjectManager::GetInstance();
 
 	InputManager* input = InputManager::GetInstance();
 
-	if (input->GetKeyState(KEY_INPUT_Z) == eInputState::Pressed || input->GetKeyState(KEY_INPUT_Z) == eInputState::Held)
+	/*if (input->GetKeyState(KEY_INPUT_Z) == eInputState::Pressed || input->GetKeyState(KEY_INPUT_Z) == eInputState::Held)
 	{
 		p_state = none;
-	}
+	}*/
 
 
 	//プレイヤーの状態で、処理を変える
@@ -93,9 +97,9 @@ void Player::Update(float delta_seconde)
 		switch (p_state)
 		{
 		case ePlayerState::idle:
-			image = move_animation[0];
 			/*player_state->Initialize();*/
 			player_state->Update(delta_seconde);
+			AnimationControl(delta_seconde);
 			break;
 
 		case ePlayerState::walk:
@@ -106,7 +110,7 @@ void Player::Update(float delta_seconde)
 
 		case ePlayerState::jump:
 			player_state->Update(delta_seconde);
-			image = move_animation[5];
+			AnimationControl(delta_seconde);
 			break;
 
 		case ePlayerState::get:
@@ -124,9 +128,11 @@ void Player::Update(float delta_seconde)
 		image = move_animation[6];
 	}*/
 
-	if (input->GetKeyState(KEY_INPUT_Z) == eInputState::Held)
+	if (input->GetKeyState(KEY_INPUT_Z) == eInputState::Pressed)
 	{
-		GetItem_Animation(delta_seconde);
+		FireBall* fire;
+		fire = objm->CreateGameObject<FireBall>(this->location);
+		fire->Set_Filpflag(this->filp_flag);
 	}
 	
 	if (is_ground == false && p_state != get)
@@ -144,7 +150,7 @@ void Player::Update(float delta_seconde)
 	if (hit_flag == false && p_state != jump && p_state != get)
 	{
 		is_ground = false;
-		velocity.y = 6;
+		velocity.y = 10 * delta_seconde;
 		jump_flag = false;
 	}
 	
@@ -408,7 +414,7 @@ void Player::Set_SlideFlag(bool flag)
 
 void Player::Movement(float delta_second)
 {
-	location += velocity * P_SPEED * delta_second;
+	location += (velocity * P_SPEED) * delta_second;
 }
 
 void Player::AnimationControl(float delta_second)
@@ -420,12 +426,87 @@ void Player::AnimationControl(float delta_second)
 	{
 		animation_time = 0.0f;
 	
-		image = move_animation[animation_num[0][animation_count]];
-
-		if (slide_flag == true)
+		/*if (p_level == ePlayerLevel::Small)
 		{
-			image = move_animation[4];
+			image = SmallMario_animation[animation_num[Small][animation_count]];
 		}
+
+		if (p_level == ePlayerLevel::Big)
+		{
+			image = BigMario_animation[animation_num[1][animation_count]];
+		}
+
+		if (p_level == ePlayerLevel::Fire)
+		{
+			image = FireMario_animation[animation_num[1][animation_count]];
+		}*/
+
+		
+		switch (p_level)
+		{
+		case ePlayerLevel::Small:
+			if (p_state == idle)
+			{
+				image = SmallMario_animation[0];
+			}
+			else if (p_state == jump)
+			{
+				image = SmallMario_animation[5];
+			}
+			 else if (slide_flag == true)
+			{
+				image = SmallMario_animation[4];
+			}
+			 else
+			{
+				image = SmallMario_animation[animation_num[Small][animation_count]];
+			}
+			break;
+
+		case ePlayerLevel::Big:
+			
+			if (p_state == idle)
+			{
+				image = BigMario_animation[0];
+			}
+			else if (p_state == jump)
+			{
+				image = BigMario_animation[6];
+			}
+			else if (slide_flag == true)
+			{
+				image = BigMario_animation[5];
+			}
+			else
+			{
+				image = BigMario_animation[animation_num[1][animation_count]];
+			}
+			break;
+
+		case ePlayerLevel::Fire:
+			
+			if (p_state == idle)
+			{
+				image = FireMario_animation[0];
+			}
+			else if (p_state == jump)
+			{
+				image = FireMario_animation[6];
+			}
+			else if (slide_flag == true)
+			{
+				image = FireMario_animation[5];
+			}
+			else
+			{
+				image = FireMario_animation[animation_num[1][animation_count]];
+			}
+			break;
+
+		default:
+			break;
+		}
+		
 
 		animation_count++;
 		

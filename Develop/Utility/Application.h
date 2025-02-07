@@ -13,7 +13,7 @@ private:
 	float delta_second;
 	LONGLONG start_time;
 	LONGLONG now_time;
-	int refresh_rate;
+	float refresh_rate;
 	class SceneManager* scene;
 
 public:

@@ -13,7 +13,7 @@ enum ePlayerState
 	none
 };
 
-enum ePlayer_Level
+enum ePlayerLevel
 {
 	Small,
 	Big,
@@ -23,19 +23,19 @@ enum ePlayer_Level
 class Player : public Character
 {
 private:
-	/*std::vector<int> SmallMario_animation;
+	std::vector<int> SmallMario_animation;
 	std::vector<int> BigMario_animation;
-	std::vector<int> FireMario_animation;*/
+	std::vector<int> FireMario_animation;
 	std::vector<int> move_animation;	//Player画像
 	std::vector<int> levelup_animation;	//アイテム取得時のアニメーション画像
 	class PlayerStateBase* player_state;	//Playerの状態
 	ePlayerState next_state;	//Playerの遷移先状態
+	ePlayerLevel p_level;
 	float animation_time;		//アニメーションの時間
 	int animation_count;		//アニメーションの回数
 	int animation_number;		//アニメーション配列の添え字
 	float g_velocity;			//重力
 	bool is_ground;
-	float x;
 	bool hit[4];
 	ePlayerState p_state;
 	class Camera* camera;
@@ -44,11 +44,14 @@ private:
 	int is_death;
 
 public:
-	bool jump_flag;
-	bool slide_flag;
-	int animation_num[3][3] = { { 1, 2, 3},
-								{ 0, 1, 0},
-								{ 0, 1, 2}};	//アニメーションの順番
+	bool jump_flag;		//ジャンプできる状態かの判定フラグ
+	bool slide_flag;	//マリオがブレーキを掛けている状態かの判定フラグ
+
+	//アニメーションの順番
+	int animation_num[4][3] = { { 1, 2, 3},		//マリオがSmallの時
+								{ 2, 3, 4},		//マリオがBigとFireの時
+								{ 0, 1, 0},		//マリオがレベルアップしたとき（下も同じ）
+								{ 0, 1, 2}};	
 								
 public:
 	virtual void Initialize() override;									//初期化処理
