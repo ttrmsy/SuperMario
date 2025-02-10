@@ -5,6 +5,7 @@ class BlockBase : public GameObject
 {
 protected:
 	int block_sound;
+	bool now_bouce;			//‰º‚©‚çÚG‚³‚ê‚½‚©‚Ç‚¤‚©
 
 public:
 	virtual void Initialize() override
@@ -49,5 +50,10 @@ public:
 	virtual const bool GetMobility() const override
 	{
 		return is_mobility;
+	}
+
+	const bool GetBounce() const
+	{
+		return now_bouce;
 	}
 };

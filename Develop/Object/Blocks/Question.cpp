@@ -5,6 +5,7 @@
 #include "../Items/Flower.h"
 #include "../Items/OneUpMush.h"
 #include "../Items/Coin.h"
+#include "../Items/Star.h"
 #include "DxLib.h"
 
 #include "../GameObjectManager.h"
@@ -61,6 +62,11 @@ void Question::Update(float delta_seconde)
 void Question::Draw(const Vector2D& screen_offset) const
 {
 	__super::Draw(screen_offset);
+
+	/*Vector2D ul = location - (collision.box_size / 2);
+	Vector2D br = location + (collision.box_size / 2);
+	DrawBoxAA(ul.x - screen_offset.x, ul.y, br.x - screen_offset.x, br.y, GetColor(255, 0, 0), FALSE);*/
+	DrawFormatString(200, 80, 0xffffff, "%f", this->location.y, TRUE);
 }
 
 void Question::Finalize()
@@ -100,7 +106,7 @@ void Question::OnHitCollision(GameObject* hit_object)
 			lc_handover.y -= 5.0f;
 
 			//ƒLƒmƒR‚ð¶¬‚·‚é
-			gm_p->CreateGameObject<Flower>(lc_handover)->SetOldLocation(lc_handover);
+			gm_p->CreateGameObject<Mushroom>(lc_handover)->SetOldLocation(lc_handover);
 		}
 	}
 }

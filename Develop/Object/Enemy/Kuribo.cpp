@@ -59,14 +59,11 @@ void Kuribo::Update(float delta_seconde)
 
 		//“¥‚Ü‚ê‚½Œã‚Ìˆ—
 		die_time += delta_seconde;
-		if (die_time <= 60.0f)
+		if (die_time >= 0.15)
 		{
-			 die_count++;
-			if (die_count >= 30)
-			{
-				m->DestroyGameObject(this);
-				die_count = 0;
-			}
+			die_time = 0;
+			m->DestroyGameObject(this);
+			
 		}		
 
 		break;
@@ -139,7 +136,7 @@ void Kuribo::OnHitCollision(GameObject* hit_object)
 			{
 				if (this->state == die)
 				{
-					this->velocity.x = 6;
+					this->velocity.x = 10;
 				}
 				else
 				{
@@ -204,7 +201,7 @@ void Kuribo::OnHitCollision(GameObject* hit_object)
 			{
 				if (this->state == die)
 				{
-					this->velocity.x = -3;
+					this->velocity.x = -10;
 				}
 				else
 				{

@@ -1,5 +1,6 @@
 #pragma once
 #include "../Character.h"
+#include "../Blocks/Brick.h"
 
 #define D_GRAVITY (9.807f)		//èdóÕâ¡ë¨ìx
 
@@ -26,6 +27,7 @@ protected:
 	bool is_ground;
 	bool hit_flag;
 	float g_velocity;
+	class Brick* block_p;
 
 public:
 	ItemBase();
