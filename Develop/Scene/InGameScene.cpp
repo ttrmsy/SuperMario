@@ -45,7 +45,7 @@ void InGameScene::Initialize()
 	cloud_image[3] = LoadGraph("Resource/Images/cloud4.png");
 	cloud_image[4] = LoadGraph("Resource/Images/cloud5.png");
 	cloud_image[5] = LoadGraph("Resource/Images/cloud6.png");
-
+	
 	//Ri”wŒi‰æ‘œj‚Ì“Ç‚İ‚İ
 	mountain_image[0] = LoadGraph("Resource/Images/mountain_up.png");
 	mountain_image[1] = LoadGraph("Resource/Images/mountain_left.png");

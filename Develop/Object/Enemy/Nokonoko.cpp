@@ -1,6 +1,5 @@
 #include "Nokonoko.h"
 #include "../../Utility/ResourceManager.h"
-
 #define SPEED (30)
 #define D_GRAVITY (9.807f)		//重力加速度
 
@@ -67,10 +66,27 @@ void Nokonoko::Update(float delta_seconde)
 		break;
 
 	case down:
-		image_offset = 0;
-		is_mobility = false;
-		die_time++;
+
 		velocity.y = 0;
+
+		//踏まれた後の処理
+		die_time += delta_seconde;
+		if (die_time >= 0.05)
+		{
+			die_time = 0;
+			die_count++;
+
+			if (die_count >= 1)
+			{
+				is_mobility = true;
+				die_count = 0;
+			}
+
+			is_mobility = false;
+
+		}
+
+		image_offset = 0;
 		collision.box_size = Vector2D(32, 32);
 		image = die_animation[0];
 		Movement(delta_seconde);
@@ -96,6 +112,7 @@ void Nokonoko::Draw(const Vector2D& screen_offset) const
 {
 	Vector2D graph_location = this->location - screen_offset;
 	DrawRotaGraphF(graph_location.x, graph_location.y - image_offset, 1.0, 0.0, image, TRUE, filp_flag);
+	DrawFormatString(200, 1, GetColor(255, 255, 255), "%d", is_mobility, TRUE);
 }
 
 void Nokonoko::Finalize()
@@ -123,8 +140,7 @@ void Nokonoko::OnHitCollision(GameObject* hit_object)
 		//自身がHitしたオブジェクトよりも下側にいたとき
 		if (diff.y > 0)
 		{
-			if (state == down)
-			{
+
 				dv.x = (target_location.x + target_boxsize.x / 2) - (this->location.x - this_boxsize.x / 2);
 				dv.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
 
@@ -143,20 +159,29 @@ void Nokonoko::OnHitCollision(GameObject* hit_object)
 						this->location.x += dv.x;
 					}
 				}
-			}
 
 			if (hit_object->GetCollision().object_type == ePlayer)
 			{
 				if (this->state == down)
 				{
-					this->velocity.x = 6;
+					if (is_mobility == false) 
+					{
+						this->velocity.x = 10;
+					}
 				}
 				else
 				{
 					state = down;
+
+					if (is_mobility == true)
+					{
+						velocity.x = 0;
+						velocity.y = 0;
+					}
+
 					PlaySound("Resource/Sounds/Se_StepOn.wav", DX_PLAYTYPE_BACK);
+
 				}
-				
 			}
 
 		}
@@ -210,13 +235,23 @@ void Nokonoko::OnHitCollision(GameObject* hit_object)
 				{
 					if (this->state == down)
 					{
-						this->velocity.x = -3;
+						if (is_mobility == false)
+						{
+							this->velocity.x -= 10;
+						}
 					}
 					else
 					{
-						velocity.x = 0;
 						state = down;
+
+						if (is_mobility == true)
+						{
+							velocity.x = 0;
+							velocity.y = 0;
+						}
+
 						PlaySound("Resource/Sounds/Se_StepOn.wav", DX_PLAYTYPE_BACK);
+
 					}
 					
 				}

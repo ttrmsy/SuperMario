@@ -13,6 +13,8 @@ private:
 	bool is_ground;
 	float g_velocity;
 	int image_offset;
+	int die_count = 0;
+
 
 public:
 	virtual void Initialize() override;
