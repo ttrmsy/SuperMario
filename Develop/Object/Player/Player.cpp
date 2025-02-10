@@ -8,6 +8,7 @@
 #include "../GameObjectManager.h"
 #include "FireBall.h"
 
+
 #define D_GRAVITY (9.807f)		//重力加速度
 #define P_SPEED (50.0f)
 
@@ -16,6 +17,7 @@ void Player::Initialize()
 	player_state = PlayerStateFactory::Get((*this), ePlayerState::idle);
 	next_state = none;
 	p_level = Fire;
+
 
 	ResourceManager* rm = ResourceManager::GetInstance();
 	SmallMario_animation = rm->GetImageResource("Resource/Images/Mario/mario.png", 9, 9, 1, 32, 32);
@@ -62,6 +64,8 @@ void Player::Initialize()
 	slide_flag = false;
 
 	state = live;
+
+	fire_count = 0;
 
 }
 
@@ -115,7 +119,7 @@ void Player::Update(float delta_seconde)
 
 		case ePlayerState::get:
 			velocity = 0;
-			/*GetItem_Animation(delta_seconde);*/
+			GetItem_Animation(delta_seconde);
 			/*image = levelup_animation[2];*/
 			break;
 
@@ -127,17 +131,30 @@ void Player::Update(float delta_seconde)
 	{
 		image = move_animation[6];
 	}*/
-
-	if (input->GetKeyState(KEY_INPUT_Z) == eInputState::Pressed)
-	{
-		FireBall* fire;
-		fire = objm->CreateGameObject<FireBall>(this->location);
-		fire->Set_Filpflag(this->filp_flag);
-	}
 	
-	if (is_ground == false && p_state != get)
+	if (fire_count < 2)
 	{
-		g_velocity += D_GRAVITY * delta_seconde;
+		if (input->GetKeyState(KEY_INPUT_LCONTROL) == eInputState::Pressed)
+		{
+			image = FireMario_animation[2];
+			FireBall* fire = nullptr;
+			fire = objm->CreateGameObject<FireBall>(this->location);
+			fire->Set_Player(this);
+			fire->Set_Filpflag(this->filp_flag);
+			fire->Set_Camera(camera);
+			fire_count++;
+		}
+	}
+
+	if (input->GetKeyState(KEY_INPUT_Z) == eInputState::Held)
+	{
+		GetItem_Animation(delta_seconde);
+	}
+
+	//マリオが
+	if (is_ground == false && /*p_state != get*/p_state == jump)
+	{
+		g_velocity += (D_GRAVITY / 444);
 		velocity.y += g_velocity;
 	}
 	else
@@ -146,16 +163,17 @@ void Player::Update(float delta_seconde)
 	}
 
 	
-
+	//マリオがどのオブジェクトにも触れていないときの重力処理
 	if (hit_flag == false && p_state != jump && p_state != get)
 	{
 		is_ground = false;
-		velocity.y = 10 * delta_seconde;
+		velocity.y = 10;
 		jump_flag = false;
 	}
 	
 	hit_flag = false;
 	
+	//マリオが画面外に行かないようにする処理
 	if (camera != nullptr)
 	{
 		float x = camera->Get_CameraLocation().x;
@@ -180,7 +198,7 @@ void Player::Draw(const Vector2D& screen_offset) const
 
 	SetFontSize(15);
 	DrawFormatString(100, 100, GetColor(255, 0, 0), "Vx:%f0,Vy:%f0", velocity.x, velocity.y);
-	DrawFormatString(100, 150, GetColor(255, 0, 0), "is_ground:%d", is_ground);
+	DrawFormatString(100, 150, GetColor(255, 0, 0), "is_ground:%d", fire_count);
 	Vector2D ul = location - (collision.box_size / 2);
 	Vector2D br = location + (collision.box_size / 2);
 	DrawBoxAA(ul.x - screen_offset.x, ul.y, br.x - screen_offset.x, br.y, GetColor(255, 0, 0), FALSE);
@@ -326,7 +344,6 @@ void Player::OnHitCollision(GameObject* hit_object)
 						g_velocity = 0;
 					}
 					
-					
 				}
 				else
 				{
@@ -346,7 +363,13 @@ void Player::OnHitCollision(GameObject* hit_object)
 					state = die;
 				}*/
 			}
+
 		}
+	}
+
+	if (target_collision.object_type == eItem)
+	{
+		p_state = get;
 	}
 
 }
@@ -414,7 +437,17 @@ void Player::Set_SlideFlag(bool flag)
 
 void Player::Movement(float delta_second)
 {
-	location += (velocity * P_SPEED) * delta_second;
+	location += velocity * P_SPEED * delta_second;
+}
+
+void Player::Set_FireCount(int count)
+{
+	fire_count += count;
+}
+
+ePlayerLevel Player::Get_PlayerLevel()
+{
+	return p_level;
 }
 
 void Player::AnimationControl(float delta_second)
@@ -425,22 +458,6 @@ void Player::AnimationControl(float delta_second)
 	if (animation_time >= (1.0f / 16.0f))
 	{
 		animation_time = 0.0f;
-	
-		/*if (p_level == ePlayerLevel::Small)
-		{
-			image = SmallMario_animation[animation_num[Small][animation_count]];
-		}
-
-		if (p_level == ePlayerLevel::Big)
-		{
-			image = BigMario_animation[animation_num[1][animation_count]];
-		}
-
-		if (p_level == ePlayerLevel::Fire)
-		{
-			image = FireMario_animation[animation_num[1][animation_count]];
-		}*/
-
 		
 		switch (p_level)
 		{
@@ -532,12 +549,13 @@ void Player::GetItem_Animation(float delta_seconde)
 		if (animation_number == 0 && animation_count == 0)
 		{
 			this->location.y += -16;
+			this->collision.box_size = Vector2D(32, 64);
 		}
 
 		if (animation_count <= 1)
 		{
 
-			image = levelup_animation[animation_num[1][animation_number]];
+			image = levelup_animation[animation_num[2][animation_number]];
 			animation_number++;
 
 			
@@ -547,9 +565,9 @@ void Player::GetItem_Animation(float delta_seconde)
 				animation_count++;
 			}
 		}
-		else if (animation_count <= 3)
+		else if (animation_count <= 2)
 		{
-			image = levelup_animation[animation_num[2][animation_number]];
+			image = levelup_animation[animation_num[3][animation_number]];
 			animation_number++;
 			
 
