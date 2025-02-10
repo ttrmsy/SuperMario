@@ -1,5 +1,9 @@
 #include "Brick.h"
+#include "BreakBlock.h"
+#include "../../Utility/Singleton.h"
 #include "DxLib.h"
+
+#include "../GameObjectManager.h"
 
 #define MAX_COUNT	(8)		//ボックス上昇・下降する上限カウント
 
@@ -24,6 +28,8 @@ void Brick::Initialize()
 	now_bouce = false;
 
 	hit_flag = false;
+
+	player = nullptr;
 
 }
 
@@ -68,12 +74,12 @@ void Brick::Draw(const Vector2D& screen_offset) const
 	Vector2D ul = location - (collision.box_size / 2);
 	Vector2D br = location + (collision.box_size / 2);
 	DrawBoxAA(ul.x - screen_offset.x, ul.y, br.x - screen_offset.x, br.y, GetColor(255, 0, 0), FALSE);
-	DrawFormatString(100, 30, 0xffffff, "%f", this->location.y, TRUE);
+	//DrawFormatString(100, 30, 0xffffff, "%f", this->location.y, TRUE);
 }
 
 void Brick::Finalize()
 {
-
+	player = nullptr;
 }
 
 void Brick::OnHitCollision(GameObject* hit_object)
@@ -103,6 +109,17 @@ void Brick::OnHitCollision(GameObject* hit_object)
 			hit_flag = true;
 			is_mobility = true;
 		}
+		
+		//if (hit_object->GetCollision().object_type == ePlayer)
+		//{
+		//	//ゲームオブジェクトのポインタを取得
+		//	GameObjectManager* gm_p = GameObjectManager::GetInstance();
+
+		//	gm_p->CreateGameObject<BreakBlock>(location)->SetLocation(location);
+
+		//	gm_p->DestroyGameObject(this);
+
+		//}
 	}
 
 }
@@ -130,4 +147,9 @@ const bool Brick::GetMobility() const
 void Brick::AnimationControl(float delta_seconde)
 {
 
+}
+
+void Brick::SetPlayerPointer(Player* player)
+{
+	this->player = player;
 }

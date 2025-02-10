@@ -1,5 +1,7 @@
 #pragma once
 #include "BlockBase.h"
+#include "../Player/Player.h"
+
 class Brick : public BlockBase
 {
 	public:
@@ -12,8 +14,10 @@ class Brick : public BlockBase
 	virtual const Collision& GetCollision() const override;
 	virtual const unsigned char GetZLayer() const override;
 	virtual const bool GetMobility() const override;
+	void SetPlayerPointer(Player* player);			//プレイヤーのポインタを取得
 
 private:
+	Player* p_pointer;
 	std::vector<int> block_image;
 	float up_count;
 	float down_count;

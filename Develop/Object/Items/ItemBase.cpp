@@ -36,7 +36,7 @@ void ItemBase::Movement(float delta_seconde)
 		//アイテムがスター以外の場合
 		if (item_type != eStar)
 		{
-			this->velocity.y = 0;
+			this->velocity.y = 1.0f;
 			g_velocity = 0.0f;
 		}
 		else      //スターの場合は跳ねるようにする
@@ -101,15 +101,13 @@ void ItemBase::OnHitCollision(GameObject* hit_object)
 				dv.x = (target_location.x + target_boxsize.x / 2) - (this->location.x - this_boxsize.x / 2);
 				dv.y = (this->location.y + this_boxsize.y / 2) - (target_location.y - target_boxsize.y / 2);
 
-				if (dv.x > dv.y)
+				if (dv.x > dv.y) //y方向のめり込みよりx方向のめり込みが大きかった場合（めり込みが小さい方向が優先される）
 				{
-					if (target_collision.object_type != eEnemy)
-					{
-						this->location.y += -dv.y;
+						this->location.y += -dv.y;			//y方向に押し戻す処理
 
-						if (target_collision.object_type == eGround || target_collision.object_type == eBlock)
+						if (target_collision.object_type == eGround || target_collision.object_type == eBlock)		//ヒットしているオブジェクトが地面orブロックだった場合
 						{
-							if (hit_object->GetMobility() == true && box_out == true)
+							if (target_collision.object_type == eBlock && hit_object->GetMobility() == true && box_out == true)				//当たったオブジェクトがブロックで可動性かつハコから出ている場合
 							{
 								is_ground = false;					//地面の接触フラグをfalseにする
 								this->velocity.y = -15.0f;			//ジャンプ力の設定
@@ -122,18 +120,6 @@ void ItemBase::OnHitCollision(GameObject* hit_object)
 								g_velocity = 0;
 							}
 						}
-
-
-
-					}
-					else
-					{
-						/*if (hit_object->GetMobility() == true)
-						{
-							velocity.y = 0;
-							velocity.y += -20.0;
-						}*/
-					}
 
 				}
 				else
@@ -192,22 +178,6 @@ void ItemBase::OnHitCollision(GameObject* hit_object)
 							}
 						}
 
-						//// 当たったオブジェクトがプレイヤーだったら、削除する
-						//if (hit_object->GetCollision().object_type == eObjectType::eBlock && hit_object->GetMobility() == true)
-						//{
-						//	//
-						//	this->velocity.y = -30.0f;
-						//}
-
-
-					}
-					else
-					{
-						/*if (hit_object->GetMobility() == true)
-						{
-							velocity.y = 0;
-							velocity.y += -20.0;
-						}*/
 					}
 
 				}
@@ -215,10 +185,6 @@ void ItemBase::OnHitCollision(GameObject* hit_object)
 				{
 					this->location.x += -dv.x;
 					this->velocity.x = -ITEM_SPEED;		//反対側に移動する
-					/*if (target_collision.object_type == eEnemy)
-					{
-						state = die;
-					}*/
 				}
 			}
 		}

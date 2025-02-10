@@ -101,8 +101,10 @@ void Question::OnHitCollision(GameObject* hit_object)
 			//ヒットフラグをtrueにする
 			hit_flag = true;
 
+			//アイテムを生成するときにアイテムが下からはみ出るのを防ぐために一度変数に自分の座標を保存する
 			Vector2D lc_handover = location;
 
+			//ここで自分のy座標を-5.0fした値にして生成するときに渡す
 			lc_handover.y -= 5.0f;
 
 			//キノコを生成する
