@@ -39,6 +39,7 @@ private:
 	bool hit[4];
 	ePlayerState p_state;
 	class Camera* camera;
+	int fire_count;		//ファイアーボールを出した数
 
 	Vector2D dv;	//デバック用変数
 	int is_death;
@@ -63,15 +64,17 @@ public:
 	virtual const unsigned char GetZLayer() const override;				//Zレイヤー取得処理
 	virtual const bool GetMobility() const override;					//可動性取得処理
 	ePlayerState GetPlayerState() const;								//Player状態取得処理
-	void SetNextState(ePlayerState next_state);
-	void SetFilp_flag(bool flag);
-	bool GetFilp_flag();
-	Vector2D Get_Velocity();
-	void Set_Velocity(Vector2D velocity);
-	void Set_IsGround(bool flag);
-	void Set_Camera(Camera* c);
-	void Set_SlideFlag(bool flag);
-	int Get_DeathCount();
+	void SetNextState(ePlayerState next_state);							//Playerの次の状態取得処理
+	void SetFilp_flag(bool flag);										//反転フラグの設定処理
+	bool GetFilp_flag();												//反転フラグの取得処理
+	Vector2D Get_Velocity();											//移動量の取得処理
+	void Set_Velocity(Vector2D velocity);								//移動量の設定処理
+	void Set_IsGround(bool flag);										//地面に着地しているかの判定設定処理
+	void Set_Camera(Camera* c);											//カメラのポインタ設定処理
+	void Set_SlideFlag(bool flag);										//ブレーキを掛けている状態かの判定設定処理
+	int Get_DeathCount();												
+	void Set_FireCount(int count);
+	ePlayerLevel Get_PlayerLevel();										//Playerのレベル取得処理
 
 private:
 	void Movement(float delta_second);
