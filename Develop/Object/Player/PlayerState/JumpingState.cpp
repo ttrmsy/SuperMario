@@ -3,7 +3,6 @@
 #include "DxLib.h"
 
 #define JUMP_VECTOR (-15.0f)
-#define D_GRAVITY (9.807f)		//�d�͉����x
 
 JumpingState::JumpingState(class Player* p)
 	: PlayerStateBase(p),g_velocity(0)

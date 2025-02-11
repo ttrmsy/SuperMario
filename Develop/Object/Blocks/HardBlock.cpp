@@ -5,7 +5,7 @@ void HardBlock::Initialize()
 {
 	image = LoadGraph("Resource/Images/Block/kai_block.png");
 
-	collision.object_type = eBlock;
+	collision.object_type = eHardBlock;
 	collision.hit_object_type.push_back(ePlayer);
 	collision.hit_object_type.push_back(eEnemy);
 	collision.hit_object_type.push_back(eItem);

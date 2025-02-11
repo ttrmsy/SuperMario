@@ -4,7 +4,8 @@
 class GoalFlag : public GameObject
 {
 private:
-	int flag_image[2];
+	std::vector<int> flag_image;
+	std::vector<int> pole_image;
 
 public:
 	virtual void Initialize() override;

@@ -16,7 +16,7 @@ void Player::Initialize()
 {
 	player_state = PlayerStateFactory::Get((*this), ePlayerState::idle);
 	next_state = none;
-	p_level = Fire;
+	p_level = Big;
 
 
 	ResourceManager* rm = ResourceManager::GetInstance();
@@ -40,7 +40,11 @@ void Player::Initialize()
 
 	image = SmallMario_animation[0];	//アニメーション画像の設定
 	animation_time = 0;			//アニメーションの時間
-	animation_number = 0;		//アニメーション配列の添え字
+	move_animation_count = 0;	//移動アニメーションカウントの初期化
+	move_animation_number = 0;	//移動アニメーション時の画像配列の添え字初期化
+
+	level_animation_count = 0;	//レベル変更(up/down)時のアニメーションカウントの初期化
+	level_animation_number = 0;	//レベル変更(up/down)時のアニメーション画像配列の添え字初期化
 
 	//画像反転フラグの設定
 	filp_flag = FALSE;	
@@ -67,6 +71,8 @@ void Player::Initialize()
 
 	fire_count = 0;
 
+	change_flag = false;
+
 }
 
 void Player::Update(float delta_seconde)
@@ -74,7 +80,7 @@ void Player::Update(float delta_seconde)
 	//ePlayerState p_state;
 	slide_flag = false;
 
-	if (p_state != get)
+	if (p_state != get && p_state != damage)
 	{
 		if (next_state != ePlayerState::none)
 		{
@@ -101,7 +107,6 @@ void Player::Update(float delta_seconde)
 		switch (p_state)
 		{
 		case ePlayerState::idle:
-			/*player_state->Initialize();*/
 			player_state->Update(delta_seconde);
 			AnimationControl(delta_seconde);
 			break;
@@ -121,6 +126,11 @@ void Player::Update(float delta_seconde)
 			velocity = 0;
 			GetItem_Animation(delta_seconde);
 			/*image = levelup_animation[2];*/
+			break;
+
+		case ePlayerState::damage:
+			velocity = 0;
+			PowerDown_Animation(delta_seconde);
 			break;
 
 		default:
@@ -146,32 +156,38 @@ void Player::Update(float delta_seconde)
 		}
 	}
 
-	if (input->GetKeyState(KEY_INPUT_Z) == eInputState::Held)
-	{
-		GetItem_Animation(delta_seconde);
-	}
+	//if (input->GetKeyState(KEY_INPUT_Z) == eInputState::Held)
+	//{
+	//	/*GetItem_Animation(delta_seconde);*/
+	//	PowerDown_Animation(delta_seconde);
+	//}
 
 	//マリオが
-	if (is_ground == false && /*p_state != get*/p_state == jump)
+	if (is_ground == false /*&& p_state != get */&& p_state == jump)
 	{
 		g_velocity += (D_GRAVITY / 444);
 		velocity.y += g_velocity;
 	}
-	else
+	else if(is_ground == true)
 	{
 		velocity.y = 0;
 	}
 
+	if (change_flag == true)
+	{
+		change_flag = false;
+		this->location.y += 16;
+		image = SmallMario_animation[0];
+	}
 	
 	//マリオがどのオブジェクトにも触れていないときの重力処理
-	if (hit_flag == false && p_state != jump && p_state != get)
+	if (hit_flag == false && p_state != jump && p_state != get && p_state != damage && change_flag == false)
 	{
 		is_ground = false;
-		velocity.y = 10;
+		velocity.y = D_GRAVITY;
 		jump_flag = false;
 	}
 	
-	hit_flag = false;
 	
 	//マリオが画面外に行かないようにする処理
 	if (camera != nullptr)
@@ -185,6 +201,8 @@ void Player::Update(float delta_seconde)
 			}
 		}
 	}
+
+	hit_flag = false;
 	
 	Movement(delta_seconde);
 	
@@ -198,18 +216,20 @@ void Player::Draw(const Vector2D& screen_offset) const
 
 	SetFontSize(15);
 	DrawFormatString(100, 100, GetColor(255, 0, 0), "Vx:%f0,Vy:%f0", velocity.x, velocity.y);
-	DrawFormatString(100, 150, GetColor(255, 0, 0), "is_ground:%d", fire_count);
+	DrawFormatString(100, 150, GetColor(255, 0, 0), "is_ground:%d", hit_flag);
 	Vector2D ul = location - (collision.box_size / 2);
 	Vector2D br = location + (collision.box_size / 2);
 	DrawBoxAA(ul.x - screen_offset.x, ul.y, br.x - screen_offset.x, br.y, GetColor(255, 0, 0), FALSE);
-	DrawCircle(this->location.x, this->location.y, 3, GetColor(255, 0, 0));
+	DrawCircle(this->location.x - screen_offset.x, this->location.y, 3, GetColor(255, 0, 0));
 	DrawFormatString(10, 30, 0xffffff, "%f", this->location.y, TRUE);
 	DrawFormatString(10, 10, 0xffffff, "%d", is_death, TRUE);
 }
 
 void Player::Finalize()
 {
-	move_animation.clear();
+	SmallMario_animation.clear();
+	BigMario_animation.clear();
+	FireMario_animation.clear();
 }
 
 void Player::OnHitCollision(GameObject* hit_object)
@@ -219,7 +239,6 @@ void Player::OnHitCollision(GameObject* hit_object)
 	Vector2D diff; //dv;
 	Vector2D target_boxsize, this_boxsize;
 	diff = 0.0f;
-	dv = 0.0f;
 	Vector2D target_location = hit_object->GetLocation();
 	Collision target_collision = hit_object->GetCollision();
 
@@ -232,27 +251,23 @@ void Player::OnHitCollision(GameObject* hit_object)
 	
 	if (diff.x >= 0)	//自身がHitしたオブジェクトよりも右側にいたとき
 	{
-		if (diff.y > 0)	//自身がHitしたオブジェクトよりも下側にいたとき
+		if (diff.y >= 0)	//自身がHitしたオブジェクトよりも下側にいたとき
 		{
-      		dv.x = (target_location.x + target_boxsize.x / 2) - (this->location.x - this_boxsize.x / 2);
-			dv.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
+      		diff.x = (target_location.x + target_boxsize.x / 2) - (this->location.x - this_boxsize.x / 2);
+			diff.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
 			
-			if (dv.x > dv.y)
+			if (diff.x > diff.y)
 			{
-				this->location.y += dv.y;
+				this->location.y += diff.y;
 				if (target_collision.object_type == eBlock)
 				{
 					velocity.y = 0;
 				}
-				
+
 			}
 			else
 			{
-				this->location.x += dv.x;
-				/*if (target_collision.object_type == eEnemy)
-				{
-					state = die;
-				}*/
+				this->location.x += diff.x;
 			}
 			
 			
@@ -260,26 +275,42 @@ void Player::OnHitCollision(GameObject* hit_object)
 		}
 		else	//自身がHitしたオブジェクトよりも上側にいたとき
 		{
-			dv.x = (target_location.x + target_boxsize.x / 2) - (this->location.x - this_boxsize.x / 2);
-			dv.y = (this->location.y + this_boxsize.y / 2) - (target_location.y - target_boxsize.y / 2);
-			
-			if (dv.x > dv.y)
+			diff.x = (target_location.x + target_boxsize.x / 2) - (this->location.x - this_boxsize.x / 2);
+			diff.y = (this->location.y + this_boxsize.y / 2) - (target_location.y - target_boxsize.y / 2);
+
+			if (diff.x > diff.y)
 			{
 				if (target_collision.object_type != eEnemy)
 				{
-					this->location.y += -dv.y;
+					this->location.y += -diff.y;
 					
-					if (target_collision.object_type == eGround || target_collision.object_type == eBlock
-						|| target_collision.object_type == ePipe)
+					if (target_collision.object_type == eGround)
 					{
 						if (velocity.y > 0)
 						{
 							is_ground = true;
 							jump_flag = true;
 						}
-						
 						g_velocity = 0;
 					}
+
+					if (target_collision.object_type == eBlock
+						|| target_collision.object_type == ePipe
+						|| target_collision.object_type == eHardBlock)
+					{
+
+						/*if (diff.y < 0.1)
+						{*/
+							if (/*velocity.y != D_GRAVITY &&*/ velocity.y > 0)
+							{
+								is_ground = true;
+								jump_flag = true;
+
+							}
+							g_velocity = 0;
+						/*}*/
+					}
+
 					
 				}
 				else
@@ -294,56 +325,76 @@ void Player::OnHitCollision(GameObject* hit_object)
 			}
 			else
 			{
-				this->location.x += dv.x;
+				this->location.x += diff.x;
 			}
 		}
 	}
 	else	//自身がHitしたオブジェクトよりも左側にいたとき
 	{
-		if (diff.y > 0)	//自身がHitしたオブジェクトよりも下側にいたとき
+		if (diff.y >= 0)	//自身がHitしたオブジェクトよりも下側にいたとき
 		{
-			dv.x = (this->location.x + this_boxsize.x / 2) - (target_location.x - target_boxsize.x / 2);
-			dv.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
+			diff.x = (this->location.x + this_boxsize.x / 2) - (target_location.x - target_boxsize.x / 2);
+			diff.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
 
-			if (dv.x < dv.y)
+			if (diff.x <= diff.y)
 			{
-				this->location.x += -dv.x;
+				this->location.x += -diff.x;
 			}
 			else
 			{
-				this->location.y += dv.y;
+				this->location.y += diff.y;
 				if (target_collision.object_type == eBlock)
 				{
   					velocity.y = 0;
 				}
 			}
 
+			/*if (target_collision.object_type == eEnemy)
+			{
+				p_state = damage;
+				p_level = Small;
+			}*/
 			
 		}
 		else	//自身がHitしたオブジェクトよりも上側にいたとき
 		{
-			dv.x = (this->location.x + this_boxsize.x / 2) - (target_location.x - target_boxsize.x / 2);
-			dv.y = (this->location.y + this_boxsize.y / 2) - (target_location.y - target_boxsize.y / 2);
+			diff.x = (this->location.x + this_boxsize.x / 2) - (target_location.x - target_boxsize.x / 2);
+			diff.y = (this->location.y + this_boxsize.y / 2) - (target_location.y - target_boxsize.y / 2);
 
-			if (dv.x > dv.y)
+			if (diff.x > diff.y)
 			{
 				if (target_collision.object_type != eEnemy)
 				{
-					this->location.y += -dv.y;
+					this->location.y += -diff.y;
 
 					
-					if (target_collision.object_type == eGround || target_collision.object_type == eBlock
-						|| target_collision.object_type == ePipe)
+					if (target_collision.object_type == eGround)
 					{
-						if (velocity.y > 0)
+						/*if (velocity.y > 0)
 						{
-							is_ground = true;
+						*/	is_ground = true;
 							jump_flag = true;
-						}
-						
+						/*}*/
 						g_velocity = 0;
 					}
-					
+
+					if (target_collision.object_type == eBlock
+						|| target_collision.object_type == ePipe
+						|| target_collision.object_type == eHardBlock)
+					{
+
+						//if (diff.y < 0.1)
+						//{
+							if (/*velocity.y != D_GRAVITY &&*/ velocity.y > 0)
+							{
+
+								is_ground = true;
+								jump_flag = true;
+							}
+						/*}*/
+						g_velocity = 0;
+					}
+
 				}
 				else
 				{
@@ -353,14 +404,14 @@ void Player::OnHitCollision(GameObject* hit_object)
 						velocity.y += -20.0;
 					}
 				}
-				
+					
 			}
 			else
 			{
-				this->location.x += -dv.x;
+				this->location.x += -diff.x;
 				/*if (target_collision.object_type == eEnemy)
 				{
-					state = die;
+					p_state = damage;
 				}*/
 			}
 
@@ -372,6 +423,11 @@ void Player::OnHitCollision(GameObject* hit_object)
 		p_state = get;
 	}
 
+	/*if (target_collision.object_type == eEnemy)
+	{
+		p_state = damage;
+		p_level = Small;
+	}*/
 }
 
 
@@ -476,7 +532,8 @@ void Player::AnimationControl(float delta_second)
 			}
 			 else
 			{
-				image = SmallMario_animation[animation_num[Small][animation_count]];
+				image = SmallMario_animation[animation_num[Small][move_animation_count]];
+				move_animation_count++;
 			}
 			break;
 
@@ -496,7 +553,8 @@ void Player::AnimationControl(float delta_second)
 			}
 			else
 			{
-				image = BigMario_animation[animation_num[1][animation_count]];
+				image = BigMario_animation[animation_num[1][move_animation_count]];
+				move_animation_count++;
 			}
 			break;
 
@@ -516,7 +574,8 @@ void Player::AnimationControl(float delta_second)
 			}
 			else
 			{
-				image = FireMario_animation[animation_num[1][animation_count]];
+				image = FireMario_animation[animation_num[1][move_animation_count]];
+				move_animation_count++;
 			}
 			break;
 
@@ -524,12 +583,10 @@ void Player::AnimationControl(float delta_second)
 			break;
 		}
 		
-
-		animation_count++;
 		
-		if (animation_count >= 3)
+		if (move_animation_count >= 3)
 		{
-			animation_count = 0;
+			move_animation_count = 0;
 		}
 		
 	}
@@ -541,53 +598,104 @@ void Player::GetItem_Animation(float delta_seconde)
 	animation_time += delta_seconde;
 
 
-	if (animation_time >=  (1.0f / 24.0f))
+	if (animation_time >= (1.0f / 24.0f))
 	{
 		animation_time = 0.0f;
 
 		
-		if (animation_number == 0 && animation_count == 0)
+		if (level_animation_number == 0 && level_animation_count == 0)
 		{
 			this->location.y += -16;
 			this->collision.box_size = Vector2D(32, 64);
 		}
 
-		if (animation_count <= 1)
+		if (level_animation_count <= 1)
 		{
 
-			image = levelup_animation[animation_num[2][animation_number]];
-			animation_number++;
+			image = levelup_animation[animation_num[2][level_animation_number]];
+			level_animation_number++;
 
 			
-			if (animation_number >= 2)
+			if (level_animation_number >= 2)
 			{
-				animation_number = 0;
-				animation_count++;
+				level_animation_number = 0;
+				level_animation_count++;
 			}
 		}
-		else if (animation_count <= 2)
+		else if (level_animation_count <= 2)
 		{
-			image = levelup_animation[animation_num[3][animation_number]];
-			animation_number++;
+			image = levelup_animation[animation_num[3][level_animation_number]];
+			level_animation_number++;
 			
 
-			if (animation_number >= 3)
+			if (level_animation_number >= 3)
 			{
-				animation_number = 0;
-				animation_count++;
+				level_animation_number = 0;
+				level_animation_count++;
 			}
 		}
 		else
 		{
-			animation_number = 0;
-			animation_count = 0;
+			level_animation_number = 0;
+			level_animation_count = 0;
 			this->location.y += 16;
 			p_state = idle;
+			p_level = Big;
 		}
 
 	}
 }
 
+void Player::PowerDown_Animation(float delta_seconde)
+{
+	animation_time += delta_seconde;
+
+	if (animation_time >= (1.0f / 24.0f))
+	{
+		animation_time = 0.0f;
+
+		//if (level_animation_number == 0 && level_animation_count == 0)
+		//{
+		//	this->collision.box_size = Vector2D(32, 32);
+		//}
+
+		if (level_animation_count <= 1)
+		{
+			image = levelup_animation[animation_num[4][level_animation_number]];
+			level_animation_number++;
+
+			if (level_animation_number > 1)
+			{
+				level_animation_number = 0;
+				level_animation_count++;
+			}
+		}
+		else if (level_animation_count <= 3)
+		{
+			image = levelup_animation[animation_num[4][level_animation_number]];
+			level_animation_number++;
+
+			if (level_animation_number > 2)
+			{
+				level_animation_number = 0;
+				level_animation_count++;
+			}
+		}
+		else
+		{
+			level_animation_number = 0;
+			level_animation_count = 0;
+			this->collision.box_size = Vector2D(32, 32);
+			p_state = idle;
+			p_level = Small;
+			change_flag = true;
+		}
+	
+
+		
+
+	}
+}
 
 void Player::DeathCount()
 {
