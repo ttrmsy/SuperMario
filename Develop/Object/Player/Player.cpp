@@ -156,11 +156,11 @@ void Player::Update(float delta_seconde)
 		}
 	}
 
-	if (input->GetKeyState(KEY_INPUT_Z) == eInputState::Held)
-	{
-		/*GetItem_Animation(delta_seconde);*/
-		PowerDown_Animation(delta_seconde);
-	}
+	//if (input->GetKeyState(KEY_INPUT_Z) == eInputState::Held)
+	//{
+	//	/*GetItem_Animation(delta_seconde);*/
+	//	PowerDown_Animation(delta_seconde);
+	//}
 
 	//マリオが
 	if (is_ground == false /*&& p_state != get */&& p_state == jump)
@@ -188,7 +188,6 @@ void Player::Update(float delta_seconde)
 		jump_flag = false;
 	}
 	
-	hit_flag = false;
 	
 	//マリオが画面外に行かないようにする処理
 	if (camera != nullptr)
@@ -202,6 +201,8 @@ void Player::Update(float delta_seconde)
 			}
 		}
 	}
+
+	hit_flag = false;
 	
 	Movement(delta_seconde);
 	
@@ -215,7 +216,7 @@ void Player::Draw(const Vector2D& screen_offset) const
 
 	SetFontSize(15);
 	DrawFormatString(100, 100, GetColor(255, 0, 0), "Vx:%f0,Vy:%f0", velocity.x, velocity.y);
-	DrawFormatString(100, 150, GetColor(255, 0, 0), "is_ground:%d", is_ground);
+	DrawFormatString(100, 150, GetColor(255, 0, 0), "is_ground:%d", hit_flag);
 	Vector2D ul = location - (collision.box_size / 2);
 	Vector2D br = location + (collision.box_size / 2);
 	DrawBoxAA(ul.x - screen_offset.x, ul.y, br.x - screen_offset.x, br.y, GetColor(255, 0, 0), FALSE);
@@ -294,15 +295,22 @@ void Player::OnHitCollision(GameObject* hit_object)
 					}
 
 					if (target_collision.object_type == eBlock
-						|| target_collision.object_type == ePipe)
+						|| target_collision.object_type == ePipe
+						|| target_collision.object_type == eHardBlock)
 					{
-						if (velocity.y != D_GRAVITY && velocity.y > 0)
-						{
-							is_ground = true;
-							jump_flag = true;
-						}
-						g_velocity = 0;
+
+						/*if (diff.y < 0.1)
+						{*/
+							if (/*velocity.y != D_GRAVITY &&*/ velocity.y > 0)
+							{
+								is_ground = true;
+								jump_flag = true;
+
+							}
+							g_velocity = 0;
+						/*}*/
 					}
+
 					
 				}
 				else
@@ -328,7 +336,7 @@ void Player::OnHitCollision(GameObject* hit_object)
 			diff.x = (this->location.x + this_boxsize.x / 2) - (target_location.x - target_boxsize.x / 2);
 			diff.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
 
-			if (diff.x < diff.y)
+			if (diff.x <= diff.y)
 			{
 				this->location.x += -diff.x;
 			}
@@ -371,16 +379,22 @@ void Player::OnHitCollision(GameObject* hit_object)
 					}
 
 					if (target_collision.object_type == eBlock
-						|| target_collision.object_type == ePipe)
+						|| target_collision.object_type == ePipe
+						|| target_collision.object_type == eHardBlock)
 					{
-						if (velocity.y != D_GRAVITY && velocity.y > 0)
-						{
-							is_ground = true;
-							jump_flag = true;
-						}
+
+						//if (diff.y < 0.1)
+						//{
+							if (/*velocity.y != D_GRAVITY &&*/ velocity.y > 0)
+							{
+
+								is_ground = true;
+								jump_flag = true;
+							}
+						/*}*/
 						g_velocity = 0;
 					}
-					
+
 				}
 				else
 				{
@@ -390,7 +404,7 @@ void Player::OnHitCollision(GameObject* hit_object)
 						velocity.y += -20.0;
 					}
 				}
-				
+					
 			}
 			else
 			{

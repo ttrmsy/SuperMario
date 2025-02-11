@@ -13,7 +13,8 @@ enum eObjectType
 	eItem,
 	eGoal,
 	ePipe,
-	eFireBall
+	eFireBall,
+	eHardBlock
 };
 
 enum eSide
