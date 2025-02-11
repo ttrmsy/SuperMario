@@ -1,11 +1,13 @@
 #pragma once
 #include "../GameObject.h"
+//#include "../Player/Player.h"
 
 class BlockBase : public GameObject
 {
 protected:
 	int block_sound;
 	bool now_bouce;			//â∫Ç©ÇÁê⁄êGÇ≥ÇÍÇΩÇ©Ç«Ç§Ç©
+	/*class Player* p_pointer;*/
 
 public:
 	virtual void Initialize() override
@@ -26,6 +28,7 @@ public:
 	virtual void Finalize() override
 	{
 		block_sound = NULL;
+		/*p_pointer = nullptr;*/
 	}
 
 	virtual void OnHitCollision(GameObject* hit_object) override
@@ -56,4 +59,12 @@ public:
 	{
 		return now_bouce;
 	}
+	
+	//void SetPlayerPointer(Player* player)
+	//{
+	//	if (player != nullptr)
+	//	{
+	//		p_pointer = player;
+	//	}
+	//}
 };

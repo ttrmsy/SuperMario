@@ -1,6 +1,7 @@
 #pragma once
 #include "SceneBase.h"
 #include "../Object/GameObjectManager.h"
+#include "../Object/Blocks/BlockBase.h"
 
 
 
@@ -15,7 +16,6 @@ private:
 	int mountain_image[6];
 	int coin_image[1];
 	Player* p;
-
 
 
 	std::vector<int> UI_num;

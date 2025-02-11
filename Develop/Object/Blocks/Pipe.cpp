@@ -154,3 +154,9 @@ void Pipe::Set_Image(int number)
 		break;
 	}
 }
+
+//“yŠÇ‚É“ü‚ê‚é‚©‚Ç‚¤‚©
+void Pipe::SetPipeEnter(bool a)
+{
+	pipe_enter = a;
+}

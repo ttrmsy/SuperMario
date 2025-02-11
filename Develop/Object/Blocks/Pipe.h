@@ -5,6 +5,7 @@ class Pipe : public GameObject
 {
 private:
 	int pipe_image[4];
+	bool pipe_enter;		//“yŠÇ‚É“ü‚ê‚é‚©‚Ç‚¤‚©
 
 public:
 	virtual void Initialize() override;
@@ -17,6 +18,7 @@ public:
 	virtual const unsigned char GetZLayer() const override;
 	virtual const bool GetMobility() const override;
 	void Set_Image(int number);
+	void SetPipeEnter(bool a);
 
 };
 
