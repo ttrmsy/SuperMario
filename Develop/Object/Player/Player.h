@@ -10,6 +10,7 @@ enum ePlayerState
 	walk,
 	jump,
 	get,
+	damage,
 	none
 };
 
@@ -25,23 +26,24 @@ class Player : public Character
 private:
 	std::vector<int> SmallMario_animation;
 	std::vector<int> BigMario_animation;
-	std::vector<int> FireMario_animation;
-	std::vector<int> move_animation;	//Player画像
+	std::vector<int> FireMario_animation;//Player画像
 	std::vector<int> levelup_animation;	//アイテム取得時のアニメーション画像
 	class PlayerStateBase* player_state;	//Playerの状態
 	ePlayerState next_state;	//Playerの遷移先状態
 	ePlayerLevel p_level;
 	float animation_time;		//アニメーションの時間
-	int animation_count;		//アニメーションの回数
-	int animation_number;		//アニメーション配列の添え字
+	int move_animation_count;		//アニメーションの回数
+	int move_animation_number;		//アニメーション配列の添え字
+	int level_animation_count;		//レベル変更時のアニメーション用カウント
+	int level_animation_number;		//レベル変更時のアニメーション用添え字
 	float g_velocity;			//重力
 	bool is_ground;
 	bool hit[4];
 	ePlayerState p_state;
 	class Camera* camera;
 	int fire_count;		//ファイアーボールを出した数
+	bool change_flag;
 
-	Vector2D dv;	//デバック用変数
 	int is_death;
 
 public:
@@ -49,10 +51,11 @@ public:
 	bool slide_flag;	//マリオがブレーキを掛けている状態かの判定フラグ
 
 	//アニメーションの順番
-	int animation_num[4][3] = { { 1, 2, 3},		//マリオがSmallの時
+	int animation_num[5][3] = { { 1, 2, 3},		//マリオがSmallの時
 								{ 2, 3, 4},		//マリオがBigとFireの時
 								{ 0, 1, 0},		//マリオがレベルアップしたとき（下も同じ）
-								{ 0, 1, 2}};	
+								{ 0, 1, 2},
+								{ 2, 1, 0} };	//マリオがレベルダウンしたとき
 								
 public:
 	virtual void Initialize() override;									//初期化処理
@@ -80,6 +83,7 @@ private:
 	void Movement(float delta_second);
 	void AnimationControl(float delta_seconde);
 	void GetItem_Animation(float delta_seconde);
+	void PowerDown_Animation(float delta_seconde);
 	void DeathCount();
 
 
