@@ -11,11 +11,11 @@ private:
 	float g_velocity;				//重力
 	double radian;					//回転量
 	bool delete_flag;				//ファイアボールの削除フラグ
-	class Player* player;
-	class Camera* camera;					//カメラポインタ
-	float animation_time;
-	int animation_count;
-	bool hit_flag;
+	class Player* player;			//Playerのポインタ
+	class Camera* camera;			//カメラポインタ
+	float animation_time;			//アニメーションの時間
+	int animation_count;			//アニメーションの回数
+	bool hit_flag;					//オブジェクトにヒットしたかの判定フラグ
 
 public:
 	virtual void Initialize() override;									//初期化処理
@@ -25,12 +25,12 @@ public:
 	virtual void OnHitCollision(GameObject* hit_object) override;		//当たり判定通知処理
 	void Set_Filpflag(bool flag);										//反転フラグ設定処理
 	bool Get_DeleteFlag();												//削除判定取得処理
-	void Set_Camera(class Camera* c);											//カメラポインタ設定処理
+	void Set_Camera(class Camera* c);									//カメラポインタ設定処理
 	void Set_Player(class Player* p);
 
 private:
-	void Movement(float delta_seconde);
-	void AnimationControl(float delta_seconde);
+	void Movement(float delta_seconde);									//移動処理
+	void AnimationControl(float delta_seconde);							//アニメーション処理
 	
 };
 

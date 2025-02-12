@@ -23,6 +23,7 @@ void Player::Initialize()
 	SmallMario_animation = rm->GetImageResource("Resource/Images/Mario/mario.png", 9, 9, 1, 32, 32);
 	BigMario_animation = rm->GetImageResource("Resource/Images/Mario/dekamario.png", 10, 10, 1, 32, 64);
 	FireMario_animation = rm->GetImageResource("Resource/Images/Mario/faiyamario.png", 9, 9, 1, 32, 64);
+	BigStarMarion_animation = rm->GetImageResource("Resource/Images/Mario/starmario.png", 36, 9, 4, 32, 64);
 	levelup_animation = rm->GetImageResource("Resource/Images/Mario/dekamarimation.png", 3, 3, 1, 32, 64);
 	collision.is_blocking = true;
 	collision.object_type = eObjectType::ePlayer;
@@ -45,7 +46,7 @@ void Player::Initialize()
 
 	level_animation_count = 0;	//レベル変更(up/down)時のアニメーションカウントの初期化
 	level_animation_number = 0;	//レベル変更(up/down)時のアニメーション画像配列の添え字初期化
-
+	level_animation_time = 0;
 	//画像反転フラグの設定
 	filp_flag = FALSE;	
 
@@ -67,12 +68,14 @@ void Player::Initialize()
 	//スライド（ブレーキ）フラグ
 	slide_flag = false;
 
+	//オブジェクトが生きているか、死んでいるかの状態
 	state = live;
 
+	//ファイアボールを出せる数の初期化
 	fire_count = 0;
 
+	//レベル(Up, Down)時のアニメーション終了判定フラグ初期化
 	change_flag = false;
-
 }
 
 void Player::Update(float delta_seconde)
@@ -124,13 +127,14 @@ void Player::Update(float delta_seconde)
 
 		case ePlayerState::get:
 			velocity = 0;
-			GetItem_Animation(delta_seconde);
+			/*Levelup_Animation(delta_seconde);*/
+			Fire_Animation(delta_seconde);
 			/*image = levelup_animation[2];*/
 			break;
 
 		case ePlayerState::damage:
 			velocity = 0;
-			PowerDown_Animation(delta_seconde);
+			Leveldown_Animation(delta_seconde);
 			break;
 
 		default:
@@ -216,7 +220,7 @@ void Player::Draw(const Vector2D& screen_offset) const
 
 	SetFontSize(15);
 	DrawFormatString(100, 100, GetColor(255, 0, 0), "Vx:%f0,Vy:%f0", velocity.x, velocity.y);
-	DrawFormatString(100, 150, GetColor(255, 0, 0), "is_ground:%d", hit_flag);
+	DrawFormatString(100, 150, GetColor(255, 0, 0), "is_ground:%d", is_ground);
 	Vector2D ul = location - (collision.box_size / 2);
 	Vector2D br = location + (collision.box_size / 2);
 	DrawBoxAA(ul.x - screen_offset.x, ul.y, br.x - screen_offset.x, br.y, GetColor(255, 0, 0), FALSE);
@@ -593,42 +597,103 @@ void Player::AnimationControl(float delta_second)
 
 }
 
-void Player::GetItem_Animation(float delta_seconde)
+void Player::Levelup_Animation(float delta_seconde)
+{
+	
+		animation_time += delta_seconde;
+
+		if (animation_time >= (1.0f / 24.0f))
+		{
+			animation_time = 0.0f;
+
+
+			if (level_animation_number == 0 && level_animation_count == 0)
+			{
+				this->location.y += -16;
+				this->collision.box_size = Vector2D(32, 64);
+			}
+
+			if (level_animation_count <= 1)
+			{
+
+				image = levelup_animation[animation_num[2][level_animation_number]];
+				level_animation_number++;
+
+
+				if (level_animation_number >= 2)
+				{
+					level_animation_number = 0;
+					level_animation_count++;
+				}
+			}
+			else if (level_animation_count <= 2)
+			{
+				image = levelup_animation[animation_num[3][level_animation_number]];
+				level_animation_number++;
+
+
+				if (level_animation_number >= 3)
+				{
+					level_animation_number = 0;
+					level_animation_count++;
+				}
+			}
+			else
+			{
+				level_animation_number = 0;
+				level_animation_count = 0;
+				this->location.y += 16;
+				p_state = idle;
+				p_level = Big;
+			}
+		}
+
+	
+}
+
+void Player::Fire_Animation(float delta_seconde)
 {
 	animation_time += delta_seconde;
 
-
-	if (animation_time >= (1.0f / 24.0f))
+	if (animation_time >= (1.0f / 50.0f))
 	{
 		animation_time = 0.0f;
 
-		
 		if (level_animation_number == 0 && level_animation_count == 0)
 		{
-			this->location.y += -16;
-			this->collision.box_size = Vector2D(32, 64);
-		}
-
-		if (level_animation_count <= 1)
-		{
-
-			image = levelup_animation[animation_num[2][level_animation_number]];
-			level_animation_number++;
-
-			
-			if (level_animation_number >= 2)
+			if (p_level == Small)
 			{
-				level_animation_number = 0;
-				level_animation_count++;
+				this->location.y += -16;
+				this->collision.box_size = Vector2D(32, 64);
 			}
 		}
-		else if (level_animation_count <= 2)
-		{
-			image = levelup_animation[animation_num[3][level_animation_number]];
-			level_animation_number++;
-			
 
-			if (level_animation_number >= 3)
+		if (level_animation_count < 4)
+		{
+		
+			if (level_animation_number == 0)
+			{
+				image = BigStarMarion_animation[level_animation_number];
+				level_animation_number++;
+			}
+			else if (level_animation_number == 1)
+			{
+				image = BigStarMarion_animation[level_animation_number * 9];
+				level_animation_number++;
+			}
+			else if (level_animation_number == 2)
+			{
+				image = BigStarMarion_animation[level_animation_number * 9];
+				level_animation_number++;
+			}
+			else if (level_animation_number == 3)
+			{
+				image = BigStarMarion_animation[level_animation_number * 9];
+				level_animation_number++;
+			}
+
+
+			if (level_animation_number >= 4)
 			{
 				level_animation_number = 0;
 				level_animation_count++;
@@ -638,15 +703,13 @@ void Player::GetItem_Animation(float delta_seconde)
 		{
 			level_animation_number = 0;
 			level_animation_count = 0;
-			this->location.y += 16;
+			p_level = Fire;
 			p_state = idle;
-			p_level = Big;
 		}
-
 	}
 }
 
-void Player::PowerDown_Animation(float delta_seconde)
+void Player::Leveldown_Animation(float delta_seconde)
 {
 	animation_time += delta_seconde;
 
