@@ -39,12 +39,14 @@ private:
 	int move_animation_number;					//アニメーション配列の添え字
 	int level_animation_count;					//レベル変更時のアニメーション用カウント
 	int level_animation_number;					//レベル変更時のアニメーション用添え字
-	float level_animation_time;
 	float g_velocity;							//重力
 	bool is_ground;								//地面に着地しているかの判定フラグ
 	class Camera* camera;						//スクロールカメラのポインタ
 	int fire_count;								//ファイアーボールを出した数
 	bool change_flag;							//Level(UP,Down)のアニメーションの終了判定フラグ
+	bool pipe_enter;							//土管に入れるかどうか
+	bool pipe_now;								//土管に入っている最中か
+	float old_enter_lc;							//土管に入る前の座標
 	int is_death;
 
 public:
