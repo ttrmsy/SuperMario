@@ -13,8 +13,19 @@ enum eObjectType
 	eItem,
 	eGoal,
 	ePipe,
+	ePipeEnter,
 	eFireBall,
 	eHardBlock
+};
+
+enum Items
+{
+	eNull,
+	eCoin,
+	eMushroom,
+	eFlower,
+	eOneup,
+	eStar
 };
 
 enum eSide
@@ -33,6 +44,7 @@ public:
 	Vector2D box_size;
 	Vector2D pivot;
 	eObjectType object_type;
+	Items item_type;
 	std::vector<eObjectType> hit_object_type;
 
 	bool IsCheckHitTarget(eObjectType object_type) const;

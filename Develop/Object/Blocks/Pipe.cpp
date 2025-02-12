@@ -16,6 +16,8 @@ void Pipe::Initialize()
 	collision.box_size = Vector2D(32, 32);
 	
 	image = pipe_image[0];
+
+	z_layer = 6;
 }
 
 void Pipe::Update(float delta_seconde)

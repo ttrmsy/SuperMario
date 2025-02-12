@@ -7,7 +7,6 @@
 
 ItemBase::ItemBase() : animation_count(0.0f),
 animation_time(0.0f),
-item_type(eNull),
 box_out(false),
 item_sound(NULL)
 {
@@ -34,7 +33,7 @@ void ItemBase::Movement(float delta_seconde)
 	else if(is_ground == true && box_out == true)		//地面に触れていてハコから出ているとき
 	{
 		//アイテムがスター以外の場合
-		if (item_type != eStar)
+		if (collision.item_type != eStar)
 		{
 			this->velocity.y = 1.0f;
 			g_velocity = 0.0f;
@@ -212,7 +211,7 @@ void ItemBase::ItemPush()
 	if (box_out == false)
 	{
 		//アイテム別の処理
-		switch (item_type)
+		switch (collision.item_type)
 		{
 		case eNull:
 			break;
@@ -246,7 +245,7 @@ void ItemBase::ItemPush()
 					return;
 				}
 
-				if (item_type != eFlower)
+				if (collision.item_type != eFlower)
 				{
 					//ボックスからでたら右方向に進むようにする
 					this->velocity.x = 2.0f;
@@ -270,12 +269,6 @@ void ItemBase::Bounce()
 	{
 		location.y--;
 	}*/
-}
-
-//タイプ取得処理
-Items ItemBase::GetItemType()
-{
-	return this->item_type;
 }
 
 //生成時の座標保存
