@@ -24,36 +24,37 @@ enum ePlayerLevel
 class Player : public Character
 {
 private:
-	std::vector<int> SmallMario_animation;
-	std::vector<int> BigMario_animation;
-	std::vector<int> FireMario_animation;//Player画像
-	std::vector<int> levelup_animation;	//アイテム取得時のアニメーション画像
-	class PlayerStateBase* player_state;	//Playerの状態
-	ePlayerState next_state;	//Playerの遷移先状態
-	ePlayerLevel p_level;
-	float animation_time;		//アニメーションの時間
-	int move_animation_count;		//アニメーションの回数
-	int move_animation_number;		//アニメーション配列の添え字
-	int level_animation_count;		//レベル変更時のアニメーション用カウント
-	int level_animation_number;		//レベル変更時のアニメーション用添え字
-	float g_velocity;			//重力
-	bool is_ground;
-	bool hit[4];
-	ePlayerState p_state;
-	class Camera* camera;
-	int fire_count;		//ファイアーボールを出した数
-	bool change_flag;
-
+	std::vector<int> SmallMario_animation;		//Player(Small)の画像
+	std::vector<int> BigMario_animation;		//Player(Big)の画像
+	std::vector<int> FireMario_animation;		//Player(Fier)の画像
+	std::vector<int> SmallStarMario_animation;	//Smallのときのスター状態のアニメーション画像
+	std::vector<int> BigStarMarion_animation;	//Bigのときのスター状態のアニメーション画像
+	std::vector<int> levelup_animation;			//レベルアップのアニメーション画像
+	class PlayerStateBase* player_state;		//PlayerStateBaseのポインタ
+	ePlayerState next_state;					//Playerの遷移先状態
+	ePlayerState p_state;						//Playerの状態
+	ePlayerLevel p_level;						//Playerのレベル
+	float animation_time;						//アニメーションの時間
+	int move_animation_count;					//アニメーションの回数
+	int move_animation_number;					//アニメーション配列の添え字
+	int level_animation_count;					//レベル変更時のアニメーション用カウント
+	int level_animation_number;					//レベル変更時のアニメーション用添え字
+	float level_animation_time;
+	float g_velocity;							//重力
+	bool is_ground;								//地面に着地しているかの判定フラグ
+	class Camera* camera;						//スクロールカメラのポインタ
+	int fire_count;								//ファイアーボールを出した数
+	bool change_flag;							//Level(UP,Down)のアニメーションの終了判定フラグ
 	int is_death;
 
 public:
-	bool jump_flag;		//ジャンプできる状態かの判定フラグ
-	bool slide_flag;	//マリオがブレーキを掛けている状態かの判定フラグ
+	bool jump_flag;								//ジャンプできる状態かの判定フラグ
+	bool slide_flag;							//マリオがブレーキを掛けている状態かの判定フラグ
 
 	//アニメーションの順番
-	int animation_num[5][3] = { { 1, 2, 3},		//マリオがSmallの時
-								{ 2, 3, 4},		//マリオがBigとFireの時
-								{ 0, 1, 0},		//マリオがレベルアップしたとき（下も同じ）
+	int animation_num[5][3] = { { 1, 2, 3},		//マリオがSmallのとき
+								{ 2, 3, 4},		//マリオがBigとFireのとき
+								{ 0, 1, 0},		//マリオがSmallからBigにレベルアップしたとき（下も同じ）
 								{ 0, 1, 2},
 								{ 2, 1, 0} };	//マリオがレベルダウンしたとき
 								
@@ -76,14 +77,15 @@ public:
 	void Set_Camera(Camera* c);											//カメラのポインタ設定処理
 	void Set_SlideFlag(bool flag);										//ブレーキを掛けている状態かの判定設定処理
 	int Get_DeathCount();												
-	void Set_FireCount(int count);
+	void Set_FireCount(int count);										//ファイアボールを出せる数の設定処理
 	ePlayerLevel Get_PlayerLevel();										//Playerのレベル取得処理
 
 private:
-	void Movement(float delta_second);
-	void AnimationControl(float delta_seconde);
-	void GetItem_Animation(float delta_seconde);
-	void PowerDown_Animation(float delta_seconde);
+	void Movement(float delta_second);									//移動処理
+	void AnimationControl(float delta_seconde);							//移動用アニメーション
+	void Levelup_Animation(float delta_seconde);						//レベルアップ時のアニメーション
+	void Fire_Animation(float delta_seconde);							//
+	void Leveldown_Animation(float delta_seconde);						//レベルダウン時のアニメショーン
 	void DeathCount();
 
 
