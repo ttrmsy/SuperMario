@@ -241,7 +241,7 @@ void InGameScene::LoadStageMapCSV()
 				break;
 
 			case '0':
-				objm->CreateGameObject<Brick>(generate_location)->SetPlayerPointer(p);
+				objm->CreateGameObject<Brick>(generate_location);
 				x++;
 				break;
 

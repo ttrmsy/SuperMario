@@ -1,6 +1,7 @@
 #pragma once
 #include "../Utility/Vector2D.h"
 #include "../Object/GameObjectManager.h"
+#include "../Object/Blocks/BlockBase.h"
 #include "../Utility/Camera.h"
 
 enum eSceneType
@@ -16,6 +17,7 @@ class SceneBase
 protected:
 	int image;
 	Camera* camera;
+	BlockBase* block_base;
 
 private:
 	Vector2D screen_offset;
@@ -27,6 +29,7 @@ public:
 
 		objm = GameObjectManager::GetInstance();
 		camera = new Camera();
+		block_base = new BlockBase();
 	}
 	
 	virtual ~SceneBase()
@@ -75,7 +78,10 @@ public:
 
 	virtual void Finalize()
 	{
-
+		camera = nullptr;
+		block_base = nullptr;
+		delete camera;
+		delete block_base;
 	}
 
 	virtual eSceneType GetNowSceneType() const = 0;

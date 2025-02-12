@@ -28,9 +28,6 @@ void Brick::Initialize()
 	now_bouce = false;
 
 	hit_flag = false;
-
-	player = nullptr;
-
 }
 
 void Brick::Update(float delta_seconde)
@@ -79,7 +76,7 @@ void Brick::Draw(const Vector2D& screen_offset) const
 
 void Brick::Finalize()
 {
-	player = nullptr;
+
 }
 
 void Brick::OnHitCollision(GameObject* hit_object)
@@ -93,35 +90,40 @@ void Brick::OnHitCollision(GameObject* hit_object)
 
 	if (diff.y < 0)
 	{
+		//当たったオブジェクトがマリオなら
 		if (hit_object->GetCollision().object_type == ePlayer)
 		{
-			//soundを再生
-			PlaySoundMem(block_sound, DX_PLAYTYPE_BACK);
+			//マリオの状態がちび状態かどうか
+			if (hit_object->GetCollision().box_size.y > 32)		//それ以外ならブロックを破壊する
+			{
+				//ゲームオブジェクトのポインタを取得
+				GameObjectManager* gm_p = GameObjectManager::GetInstance();
 
-			//ヒットフラグをtrueにする
-			hit_flag = true;
+				gm_p->CreateGameObject<BreakBlock>(location)->SetLocation(location);
 
-			Vector2D lc_handover = location;
+				gm_p->DestroyGameObject(this);
 
-			lc_handover.y -= 5.0f;
+			}
+			else     //ちび状態ならブロックが少し上に上がる処理
+			{
+				//soundを再生
+				PlaySoundMem(block_sound, DX_PLAYTYPE_BACK);
 
-			PlaySound("Resource/Sounds/SE_Block.wav", DX_PLAYTYPE_BACK);
-			hit_flag = true;
-			is_mobility = true;
+				//ヒットフラグをtrueにする
+				hit_flag = true;
+
+				Vector2D lc_handover = location;
+
+				lc_handover.y -= 5.0f;
+
+				PlaySound("Resource/Sounds/SE_Block.wav", DX_PLAYTYPE_BACK);
+				hit_flag = true;
+				is_mobility = true;
+			}
+		
 		}
 		
-		//if (hit_object->GetCollision().object_type == ePlayer)
-		//{
-		//	//ゲームオブジェクトのポインタを取得
-		//	GameObjectManager* gm_p = GameObjectManager::GetInstance();
-
-		//	gm_p->CreateGameObject<BreakBlock>(location)->SetLocation(location);
-
-		//	gm_p->DestroyGameObject(this);
-
-		//}
 	}
-
 }
 
 const Vector2D& Brick::GetLocation() const
@@ -147,9 +149,4 @@ const bool Brick::GetMobility() const
 void Brick::AnimationControl(float delta_seconde)
 {
 
-}
-
-void Brick::SetPlayerPointer(Player* player)
-{
-	this->player = player;
 }
