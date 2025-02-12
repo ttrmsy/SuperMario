@@ -10,6 +10,7 @@
 #include "../Object/BackGround/Sky.h"
 #include "../Object/Blocks/Question.h"
 #include "../Object/Blocks/Pipe.h"
+#include "../Object/Blocks/Pipeenter.h"
 #include "../Object/Blocks/Brick.h"
 #include "../Object/Blocks/HardBlock.h"
 #include "../Object/Goal/GoalFlag.h"
@@ -282,6 +283,11 @@ void InGameScene::LoadStageMapCSV()
 			case '3':
 				pipe = objm->CreateGameObject<Pipe>(generate_location);
 				pipe->Set_Image(3);
+				x++;
+				break;
+			case 'E':
+
+				objm->CreateGameObject<Pipeenter>(Vector2D((generate_location.x + 16.0f),generate_location.y + 8.0f));
 				x++;
 				break;
 			}

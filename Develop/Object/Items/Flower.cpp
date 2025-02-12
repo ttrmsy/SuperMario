@@ -17,8 +17,9 @@ void Flower::Initialize()
 	move_animation = rm->GetImageResource("Resource/Images/Item/flower.png", 4, 4, 1, 32, 32);
 
 	collision.object_type = eItem;
+	collision.item_type = eFlower;		//オブジェクトのタイプ設定
 	collision.hit_object_type.push_back(eObjectType::ePlayer);
-	collision.box_size = Vector2D(32, 32);
+	collision.box_size = Vector2D(8, 8);
 
 	//レイヤー設定
 	z_layer = 4;
@@ -33,9 +34,6 @@ void Flower::Initialize()
 
 	animation_time = 0;
 
-	//オブジェクトのタイプ設定
-	item_type = eFlower;
-
 	//アイテムが出てきた時の音を流す
 	PlaySoundMem(item_sound, DX_PLAYTYPE_BACK);
 }
@@ -43,6 +41,12 @@ void Flower::Initialize()
 void Flower::Update(float delta_seconde)
 {
 	ItemPush();
+
+	//ボックスからでたら当たり判定を通常にする
+	if (box_out == true)
+	{
+		collision.box_size = Vector2D(32, 32);
+	}
 
 	AnimationControl(delta_seconde);
 }

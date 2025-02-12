@@ -19,6 +19,7 @@ void Coin::Initialize()
 	item_sound = rm->GetSoundResource("Resource/Sounds/SE_CoinPickUp.wav");
 
 	collision.object_type = eItem;
+	collision.item_type = eCoin;		//オブジェクトのタイプ設定
 	collision.hit_object_type.push_back(eObjectType::ePlayer);
 	collision.box_size = Vector2D(32, 32);
 
@@ -34,9 +35,6 @@ void Coin::Initialize()
 	animation_count = 0;
 
 	animation_time = 0;
-
-	//オブジェクトのタイプ設定
-	item_type = eCoin;
 
 	//アイテムが出てきた時の音を流す
 	PlaySoundMem(item_sound, DX_PLAYTYPE_BACK);

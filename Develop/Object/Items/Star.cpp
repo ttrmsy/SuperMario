@@ -20,10 +20,11 @@ void Star::Initialize()
 
 	collision.is_blocking = true;
 	collision.object_type = eItem;
+	collision.item_type = eStar;			//オブジェクトのタイプ設定
 	collision.hit_object_type.push_back(eObjectType::ePlayer);
 	collision.hit_object_type.push_back(eObjectType::eGround);
 	collision.hit_object_type.push_back(eObjectType::eBlock);
-	collision.box_size = Vector2D(32, 32);
+	collision.box_size = Vector2D(8, 8);
 
 	//レイヤー設定
 	z_layer = 4;
@@ -32,9 +33,6 @@ void Star::Initialize()
 	is_mobility = true;
 
 	is_ground = true;
-
-	//オブジェクトのタイプ設定
-	item_type = eStar;
 
 	//アイテムが出てきた時の音を流す
 	PlaySoundMem(item_sound, DX_PLAYTYPE_BACK);
@@ -50,6 +48,12 @@ void Star::Update(float delta_seconde)
 	if (hit_flag == false)
 	{
 		is_ground = false;
+	}
+
+	//ボックスからでたら当たり判定を通常にする
+	if (box_out == true)
+	{
+		collision.box_size = Vector2D(32, 32);
 	}
 
 	//地面に触れていたら跳ねる
