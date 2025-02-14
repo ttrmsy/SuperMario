@@ -10,6 +10,7 @@ private:
 	float up_count;
 	float down_count;
 	bool hit_flag;
+	
 
 public:
 	virtual void Initialize() override;
@@ -21,6 +22,7 @@ public:
 	virtual const Collision& GetCollision() const override;
 	virtual const unsigned char GetZLayer() const override;
 	virtual const bool GetMobility() const override;
+	void SetItemType(Items a);
 	
 private:
 	void AnimationControl(float delta_seconde);

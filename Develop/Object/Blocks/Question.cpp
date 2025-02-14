@@ -39,6 +39,8 @@ void Question::Initialize()
 
 	hit_flag = false;
 
+
+
 }
 
 void Question::Update(float delta_seconde)
@@ -130,6 +132,11 @@ const unsigned char Question::GetZLayer() const
 const bool Question::GetMobility() const
 {
 	return is_mobility;
+}
+
+void Question::SetItemType(Items a)
+{
+	collision.item_type = a;
 }
 
 //アニメーション処理

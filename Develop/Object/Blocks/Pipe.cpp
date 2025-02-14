@@ -17,7 +17,7 @@ void Pipe::Initialize()
 	
 	image = pipe_image[0];
 
-	z_layer = 6;
+	//z_layer = 3;
 }
 
 void Pipe::Update(float delta_seconde)

@@ -237,9 +237,38 @@ void InGameScene::LoadStageMapCSV()
 			switch (c)
 			{
 			case '?':
-				objm->CreateGameObject<Question>(generate_location);
-				x++;
-				break;
+				c = fgetc(fp);
+				switch (c)
+				{
+				case 'M':
+					objm->CreateGameObject<Question>(generate_location)->SetItemType(eMushroom);
+					x++;
+					break;
+
+				case 'F':
+					objm->CreateGameObject<Question>(generate_location)->SetItemType(eFlower);
+					x++;
+					break;
+
+				case 'C':
+					objm->CreateGameObject<Question>(generate_location)->SetItemType(eCoin);
+					x++;
+					break;
+
+				case 'S':
+					objm->CreateGameObject<Question>(generate_location)->SetItemType(eStar);
+					x++;
+					break;
+
+				case 'O':
+					objm->CreateGameObject<Question>(generate_location)->SetItemType(eOneup);
+					x++;
+					break;
+				default:
+					break;
+				}
+
+			
 
 			case '0':
 				objm->CreateGameObject<Brick>(generate_location);
