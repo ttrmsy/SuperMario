@@ -104,7 +104,7 @@ void WalkingState::Update(float delta_seconde)
 	{
 		if (speed > 0)
 		{
-			speed += (float)-4 / 30 /** delta_seconde*/;
+			speed += (float)-6 / 30;
 			if (speed < 1.0e-6f)
 			{
 				speed = 0;
@@ -113,7 +113,7 @@ void WalkingState::Update(float delta_seconde)
 		}
 		else
 		{
-			speed += (float)4 / 30/* * delta_seconde*/;
+			speed += (float)6 / 30;
 			if (speed > -1.0e-6f)
 			{
 				speed = 0;

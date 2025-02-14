@@ -15,6 +15,8 @@ private:
 	int cloud_image[6];
 	int mountain_image[6];
 	int coin_image[1];
+	int time_remaining = 500;  // ‰ŠúŠÔ500•b
+	float time_counter = 0.0f;
 	Player* p;
 
 

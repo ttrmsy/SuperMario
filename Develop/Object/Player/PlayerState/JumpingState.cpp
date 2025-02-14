@@ -41,8 +41,12 @@ void JumpingState::Update(float delta_seconde)
 		if (input_d != eInputState::Pressed && input_d != eInputState::Held)
 		{
 			j_velocity = player->Get_Velocity();
-			j_velocity.x += -0.15 /** delta_seconde*/;
-			player->Set_Velocity(j_velocity);
+			if (j_velocity.x < 6)
+			{
+				j_velocity.x += -0.15 /** delta_seconde*/;
+				player->Set_Velocity(j_velocity);
+			}
+			
 		}
 
 	}
@@ -53,15 +57,18 @@ void JumpingState::Update(float delta_seconde)
 		if (input_a != eInputState::Pressed && input_a != eInputState::Held)
 		{
 			j_velocity = player->Get_Velocity();
-			j_velocity.x += 0.15 /** delta_seconde*/;
-			player->Set_Velocity(j_velocity);
+			if (j_velocity.x < 6)
+			{
+				j_velocity.x += 0.15 /** delta_seconde*/;
+				player->Set_Velocity(j_velocity);
+			}
 		}
 
 	}
 
 	
 
-	//SPACE�L�[������������ƃW�����v�̍������ω�����
+	//SPACEを押し続けるとジャンプの高さが変わる処理
 	if (input->GetKeyState(KEY_INPUT_SPACE) == Held && Held_jump < 24)
 	{
 		j_velocity = player->Get_Velocity();

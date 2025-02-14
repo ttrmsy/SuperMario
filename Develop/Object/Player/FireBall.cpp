@@ -30,6 +30,9 @@ void FireBall::Initialize()
 	//ˆÚ“®—Ê‰Šú‰»
 	velocity.x = 0;
 
+	//ƒŒƒCƒ„[İ’è
+	z_layer = 5;
+
 	//‰Â“®«‚Ì‰Šúİ’è
 	is_mobility = true;
 

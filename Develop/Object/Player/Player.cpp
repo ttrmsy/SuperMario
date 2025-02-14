@@ -16,7 +16,7 @@ void Player::Initialize()
 {
 	player_state = PlayerStateFactory::Get((*this), ePlayerState::idle);
 	next_state = none;
-	p_level = Big;
+	p_level = Small;
 
 
 	ResourceManager* rm = ResourceManager::GetInstance();
@@ -31,7 +31,7 @@ void Player::Initialize()
 	collision.hit_object_type.push_back(eObjectType::eEnemy);
 	collision.hit_object_type.push_back(eObjectType::eGround);
 	collision.hit_object_type.push_back(eObjectType::eItem);
-	collision.box_size = Vector2D(32,64);
+	collision.box_size = Vector2D(32,32);
 
 	//レイヤー設定
 	z_layer = 5;
@@ -46,7 +46,7 @@ void Player::Initialize()
 
 	level_animation_count = 0;	//レベル変更(up/down)時のアニメーションカウントの初期化
 	level_animation_number = 0;	//レベル変更(up/down)時のアニメーション画像配列の添え字初期化
-	level_animation_time = 0;
+
 	//画像反転フラグの設定
 	filp_flag = FALSE;	
 
@@ -76,6 +76,13 @@ void Player::Initialize()
 
 	//レベル(Up, Down)時のアニメーション終了判定フラグ初期化
 	change_flag = false;
+
+	pipe_enter = false;        //土管に入れるかどうか
+	pipe_now = false;            //土管に入っている最中か
+	old_enter_lc = 0.0f;        //土管に入る前の座標
+
+	//取得したアイテム
+	get_item = eNull;
 }
 
 void Player::Update(float delta_seconde)
@@ -127,9 +134,16 @@ void Player::Update(float delta_seconde)
 
 		case ePlayerState::get:
 			velocity = 0;
-			/*Levelup_Animation(delta_seconde);*/
-			Fire_Animation(delta_seconde);
-			/*image = levelup_animation[2];*/
+			if (get_item == eMushroom)
+			{
+				Levelup_Animation(delta_seconde);
+			}
+			else if (get_item == eFlower)
+			{
+				Fire_Animation(delta_seconde);
+			}
+			
+			
 			break;
 
 		case ePlayerState::damage:
@@ -141,10 +155,10 @@ void Player::Update(float delta_seconde)
 			break;
 		}
 	}
-	/*else if(state == die)
+	else if(state == die)
 	{
-		image = move_animation[6];
-	}*/
+		image = SmallMario_animation[6];
+	}
 	
 	if (fire_count < 2)
 	{
@@ -166,7 +180,7 @@ void Player::Update(float delta_seconde)
 	//	PowerDown_Animation(delta_seconde);
 	//}
 
-	//マリオが
+	//マリオがジャンプしているときの重力処理
 	if (is_ground == false /*&& p_state != get */&& p_state == jump)
 	{
 		g_velocity += (D_GRAVITY / 444);
@@ -185,7 +199,9 @@ void Player::Update(float delta_seconde)
 	}
 	
 	//マリオがどのオブジェクトにも触れていないときの重力処理
-	if (hit_flag == false && p_state != jump && p_state != get && p_state != damage && change_flag == false)
+	if (hit_flag == false && p_state != jump 
+		&& p_state != get && p_state != damage 
+		&& change_flag == false)
 	{
 		is_ground = false;
 		velocity.y = D_GRAVITY;
@@ -206,9 +222,42 @@ void Player::Update(float delta_seconde)
 		}
 	}
 
+	//マリオが土管に入る処理
+	if (pipe_enter == true)
+	{
+		if (input->GetKeyState(KEY_INPUT_S) == eInputState::Held || input->GetKeyState(KEY_INPUT_S) == eInputState::Pressed)
+		{
+			pipe_now = true;
+			old_enter_lc = this->location.y;    //現在座標の保存
+			collision.is_blocking = false;        //当たり判定をなくす
+			//location.x += 100.0f;
+		}
+	}
+
 	hit_flag = false;
+
+	//土管に入っている最中は移動ができないようにする
+	if (pipe_now)
+	{
+		//今いる座標からboxsize分下にいくまで下に下がる
+		if (location.y - (collision.box_size.y / 2) < old_enter_lc + (collision.box_size.y / 2))
+		{
+			location.y++;
+			//z_layer = 5;
+		}
+		else     //完全に埋まったら移動する
+		{
+			//z_layer = 5;
+			pipe_now = false;
+			location.x += 100.0f;
+			collision.is_blocking = true;
+		}
+	}
+	else
+	{
+		Movement(delta_seconde);
+	}
 	
-	Movement(delta_seconde);
 	
 	DeathCount();
 }
@@ -220,7 +269,7 @@ void Player::Draw(const Vector2D& screen_offset) const
 
 	SetFontSize(15);
 	DrawFormatString(100, 100, GetColor(255, 0, 0), "Vx:%f0,Vy:%f0", velocity.x, velocity.y);
-	DrawFormatString(100, 150, GetColor(255, 0, 0), "is_ground:%d", is_ground);
+	DrawFormatString(100, 150, GetColor(255, 0, 0), "is_ground:%d", fire_count);
 	Vector2D ul = location - (collision.box_size / 2);
 	Vector2D br = location + (collision.box_size / 2);
 	DrawBoxAA(ul.x - screen_offset.x, ul.y, br.x - screen_offset.x, br.y, GetColor(255, 0, 0), FALSE);
@@ -243,195 +292,221 @@ void Player::OnHitCollision(GameObject* hit_object)
 	Vector2D diff; //dv;
 	Vector2D target_boxsize, this_boxsize;
 	diff = 0.0f;
+
 	Vector2D target_location = hit_object->GetLocation();
 	Collision target_collision = hit_object->GetCollision();
 
 	target_boxsize = hit_object->GetCollision().box_size;
 	this_boxsize = this->collision.box_size;
+
+	
 	
 
 	//2点間の距離を求める
-	diff = this->location - target_location;
+	diff = (this->location) - target_location;
 	
-	if (diff.x >= 0)	//自身がHitしたオブジェクトよりも右側にいたとき
+	if (target_collision.object_type != ePipeEnter && this->collision.is_blocking == true)
 	{
-		if (diff.y >= 0)	//自身がHitしたオブジェクトよりも下側にいたとき
+		if (diff.x >= 0)	//自身がHitしたオブジェクトよりも右側にいたとき
 		{
-      		diff.x = (target_location.x + target_boxsize.x / 2) - (this->location.x - this_boxsize.x / 2);
-			diff.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
-			
-			if (diff.x > diff.y)
+			if (diff.y >= 0)	//自身がHitしたオブジェクトよりも下側にいたとき
 			{
-				this->location.y += diff.y;
-				if (target_collision.object_type == eBlock)
+				diff.x = (target_location.x + target_boxsize.x / 2) - (this->location.x - this_boxsize.x / 2);
+				diff.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
+
+				if (diff.x > diff.y)
 				{
-					velocity.y = 0;
+					this->location.y += diff.y;
+					if (target_collision.object_type == eBlock)
+					{
+						velocity.y = 0;
+					}
+
+				}
+				else
+				{
+					this->location.x += diff.x;
+				}
+
+				if (target_collision.object_type == eEnemy)
+				{
+					if (p_level == Big || p_level == Fire)
+					{
+						p_state = damage;
+						p_level = Small;
+					}
+					else
+					{
+						state = die;
+					}
 				}
 
 			}
-			else
+			else	//自身がHitしたオブジェクトよりも上側にいたとき
 			{
-				this->location.x += diff.x;
-			}
-			
-			
-	
-		}
-		else	//自身がHitしたオブジェクトよりも上側にいたとき
-		{
-			diff.x = (target_location.x + target_boxsize.x / 2) - (this->location.x - this_boxsize.x / 2);
-			diff.y = (this->location.y + this_boxsize.y / 2) - (target_location.y - target_boxsize.y / 2);
+				diff.x = (target_location.x + target_boxsize.x / 2) - (this->location.x - this_boxsize.x / 2);
+				diff.y = (this->location.y + this_boxsize.y / 2) - (target_location.y - target_boxsize.y / 2);
 
-			if (diff.x > diff.y)
-			{
-				if (target_collision.object_type != eEnemy)
+				if (diff.x > diff.y)
 				{
-					this->location.y += -diff.y;
-					
-					if (target_collision.object_type == eGround)
+					if (target_collision.object_type != eEnemy)
 					{
-						if (velocity.y > 0)
+						this->location.y += -diff.y;
+
+						if (target_collision.object_type == eGround)
+						{
+							if (velocity.y > 0)
+							{
+								is_ground = true;
+								jump_flag = true;
+							}
+							g_velocity = 0;
+						}
+
+						if (target_collision.object_type == eBlock
+							|| target_collision.object_type == ePipe
+							|| target_collision.object_type == eHardBlock)
+						{
+							if (velocity.y > 0)
+							{
+								is_ground = true;
+								jump_flag = true;
+							}
+							g_velocity = 0;
+
+						}
+
+
+					}
+					else
+					{
+						if (hit_object->GetMobility() == true)
+						{
+							velocity.y = 0;
+							velocity.y = -20;
+							is_ground = false;
+						}
+					}
+
+				}
+				else
+				{
+					this->location.x += diff.x;
+				}
+			}
+		}
+		else	//自身がHitしたオブジェクトよりも左側にいたとき
+		{
+			if (diff.y >= 0)	//自身がHitしたオブジェクトよりも下側にいたとき
+			{
+				diff.x = (this->location.x + this_boxsize.x / 2) - (target_location.x - target_boxsize.x / 2);
+				diff.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
+
+				if (diff.x <= diff.y)
+				{
+					this->location.x += -diff.x;
+				}
+				else
+				{
+					this->location.y += diff.y;
+					if (target_collision.object_type == eBlock)
+					{
+						velocity.y = 0;
+					}
+				}
+
+				if (target_collision.object_type == eEnemy)
+				{
+					if (p_level == Big || p_level == Fire)
+					{
+						p_state = damage;
+						p_level = Small;
+					}
+					else
+					{
+						state = die;
+					}
+				}
+			}
+			else	//自身がHitしたオブジェクトよりも上側にいたとき
+			{
+				diff.x = (this->location.x + this_boxsize.x / 2) - (target_location.x - target_boxsize.x / 2);
+				diff.y = (this->location.y + this_boxsize.y / 2) - (target_location.y - target_boxsize.y / 2);
+
+				if (diff.x > diff.y)
+				{
+					if (target_collision.object_type != eEnemy)
+					{
+						this->location.y += -diff.y;
+
+
+						if (target_collision.object_type == eGround)
 						{
 							is_ground = true;
 							jump_flag = true;
+							g_velocity = 0;
 						}
-						g_velocity = 0;
-					}
 
-					if (target_collision.object_type == eBlock
-						|| target_collision.object_type == ePipe
-						|| target_collision.object_type == eHardBlock)
-					{
-
-						/*if (diff.y < 0.1)
-						{*/
-							if (/*velocity.y != D_GRAVITY &&*/ velocity.y > 0)
+						if (target_collision.object_type == eBlock
+							|| target_collision.object_type == ePipe
+							|| target_collision.object_type == eHardBlock)
+						{
+							if (velocity.y > 0)
 							{
 								is_ground = true;
 								jump_flag = true;
-
 							}
 							g_velocity = 0;
-						/*}*/
+						}
+
 					}
-
-					
-				}
-				else
-				{
-					if (hit_object->GetMobility() == true)
+					else
 					{
-						velocity.y = 0;
-						velocity.y += -20.0;
-					}
-				}
-			
-			}
-			else
-			{
-				this->location.x += diff.x;
-			}
-		}
-	}
-	else	//自身がHitしたオブジェクトよりも左側にいたとき
-	{
-		if (diff.y >= 0)	//自身がHitしたオブジェクトよりも下側にいたとき
-		{
-			diff.x = (this->location.x + this_boxsize.x / 2) - (target_location.x - target_boxsize.x / 2);
-			diff.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
-
-			if (diff.x <= diff.y)
-			{
-				this->location.x += -diff.x;
-			}
-			else
-			{
-				this->location.y += diff.y;
-				if (target_collision.object_type == eBlock)
-				{
-  					velocity.y = 0;
-				}
-			}
-
-			/*if (target_collision.object_type == eEnemy)
-			{
-				p_state = damage;
-				p_level = Small;
-			}*/
-			
-		}
-		else	//自身がHitしたオブジェクトよりも上側にいたとき
-		{
-			diff.x = (this->location.x + this_boxsize.x / 2) - (target_location.x - target_boxsize.x / 2);
-			diff.y = (this->location.y + this_boxsize.y / 2) - (target_location.y - target_boxsize.y / 2);
-
-			if (diff.x > diff.y)
-			{
-				if (target_collision.object_type != eEnemy)
-				{
-					this->location.y += -diff.y;
-
-					
-					if (target_collision.object_type == eGround)
-					{
-						/*if (velocity.y > 0)
+						if (hit_object->GetMobility() == true)
 						{
-						*/	is_ground = true;
-							jump_flag = true;
-						/*}*/
-						g_velocity = 0;
-					}
-
-					if (target_collision.object_type == eBlock
-						|| target_collision.object_type == ePipe
-						|| target_collision.object_type == eHardBlock)
-					{
-
-						//if (diff.y < 0.1)
-						//{
-							if (/*velocity.y != D_GRAVITY &&*/ velocity.y > 0)
-							{
-
-								is_ground = true;
-								jump_flag = true;
-							}
-						/*}*/
-						g_velocity = 0;
+							velocity.y = 0;
+							velocity.y = -20;
+							is_ground = false;
+						}
 					}
 
 				}
 				else
 				{
-					if (hit_object->GetMobility() == true)
+					this->location.x += -diff.x;
+					/*if (target_collision.object_type == eEnemy)
 					{
-						velocity.y = 0;
-						velocity.y += -20.0;
-					}
+						p_state = damage;
+					}*/
 				}
-					
-			}
-			else
-			{
-				this->location.x += -diff.x;
-				/*if (target_collision.object_type == eEnemy)
-				{
-					p_state = damage;
-				}*/
-			}
 
+			}
+		}
+		pipe_enter = false;
+	}
+	else
+	{
+		pipe_enter = true;
+	}
+
+	if (target_collision.item_type == eMushroom)
+	{
+		if (p_level != Big || p_level != Fire)
+		{
+			p_state = get;
+			get_item = eMushroom;
 		}
 	}
 
-	if (target_collision.object_type == eItem)
+	if (target_collision.item_type == eFlower)
 	{
-		p_state = get;
+		if (p_level != Fire)
+		{
+			p_state = get;
+			get_item = eFlower;
+		}
 	}
 
-	/*if (target_collision.object_type == eEnemy)
-	{
-		p_state = damage;
-		p_level = Small;
-	}*/
 }
 
 
@@ -645,6 +720,7 @@ void Player::Levelup_Animation(float delta_seconde)
 				this->location.y += 16;
 				p_state = idle;
 				p_level = Big;
+				get_item = eNull;
 			}
 		}
 
@@ -705,6 +781,7 @@ void Player::Fire_Animation(float delta_seconde)
 			level_animation_count = 0;
 			p_level = Fire;
 			p_state = idle;
+			get_item = eNull;
 		}
 	}
 }
@@ -716,11 +793,6 @@ void Player::Leveldown_Animation(float delta_seconde)
 	if (animation_time >= (1.0f / 24.0f))
 	{
 		animation_time = 0.0f;
-
-		//if (level_animation_number == 0 && level_animation_count == 0)
-		//{
-		//	this->collision.box_size = Vector2D(32, 32);
-		//}
 
 		if (level_animation_count <= 1)
 		{

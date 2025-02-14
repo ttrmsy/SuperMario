@@ -23,11 +23,9 @@ void InGameScene::Initialize()
 {
 	ResourceManager* rm = ResourceManager::GetInstance();
 	UI_num = rm->GetImageResource("Resource/Images/UI/num.png", 15, 15, 1, 16, 16);
-	UI_string = rm->GetImageResource("Resource/Images/UI/string.png", 26, 26, 1, 16, 16);
-	UI_time = rm->GetImageResource("Resource/Images/UI/num.png", 15, 15, 1, 16, 16);
 
 	num_image = UI_num[0];
-	num_time = UI_num[5];
+	num_time = UI_num[0];
 	num_world = UI_num[0];
 
 	//BGMのループ再生
@@ -74,6 +72,22 @@ eSceneType InGameScene::Update(float delta_second)
 		return eSceneType::eResult;
 	}
 
+	// タイマー更新処理
+	time_counter += delta_second;  // フレームごとに経過時間を加算
+
+	if (time_counter >= 1.0f)  // 1秒経過した場合
+	{
+		time_remaining -= 1;  // 1秒減らす
+		time_counter = 0.0f;  // カウンターをリセット
+	}
+
+	// 残り時間が0になったら、必要な処理を追加
+	if (time_remaining <= 0)
+	{
+		time_remaining = 0;
+		// ゲームオーバーや別の処理を追加することも可能
+	}
+
 	__super::Update(delta_second);
 
 	camera->Update();
@@ -108,21 +122,30 @@ void InGameScene::Draw() const
 	int a, b;
 	a = 520;
 	b = 55;
-	for (int i = 0; i < 3; i++)
-	{
-		DrawRotaGraphF(a, b, 1.0, 0.0, num_time, TRUE);
-		a += 16;
 
-	}
+	// 制限時間を500秒に設定
+	LONGLONG time_set = time_remaining;
+	int time_sec1 = time_set / 100;  // 百の位
+	int time_sec2 = (time_set % 100) / 10;  // 十の位
+	int time_sec3 = time_set % 10;  // 一の位
+
+	// 各桁の数字を描画
+	DrawRotaGraphF(a, b, 1.0, 0.0, UI_num[time_sec1], TRUE);  // 百の位
+	a += 16;
+	DrawRotaGraphF(a, b, 1.0, 0.0, UI_num[time_sec2], TRUE);  // 十の位
+	a += 16;
+	DrawRotaGraphF(a, b, 1.0, 0.0, UI_num[time_sec3], TRUE);  // 一の位
 
 	LoadGraphScreen(360, 28, "Resource/Images/UI/world.png", TRUE);
 	for (int i = 0; i < 3; i++)
 	a = 400;
-	b = 55;
-	{
-		DrawRotaGraphF(a, b, 1.0, 0.0, num_world, TRUE);
-		a += 16;
-	}
+
+	DrawRotaGraphF(a, b, 1.0, 0.0, UI_num[1], TRUE);
+	a += 16;
+	DrawRotaGraphF(a, b, 1.0, 0.0, UI_num[10], TRUE);
+	a += 16;
+	DrawRotaGraphF(a, b, 1.0, 0.0, UI_num[1], TRUE);
+	a += 16;
 
 	__super::Draw();
 }
