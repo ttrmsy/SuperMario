@@ -16,7 +16,7 @@ void Player::Initialize()
 {
 	player_state = PlayerStateFactory::Get((*this), ePlayerState::idle);
 	next_state = none;
-	p_level = Fire;
+	p_level = Small;
 
 
 	ResourceManager* rm = ResourceManager::GetInstance();
@@ -31,7 +31,7 @@ void Player::Initialize()
 	collision.hit_object_type.push_back(eObjectType::eEnemy);
 	collision.hit_object_type.push_back(eObjectType::eGround);
 	collision.hit_object_type.push_back(eObjectType::eItem);
-	collision.box_size = Vector2D(32,64);
+	collision.box_size = Vector2D(32,32);
 
 	//レイヤー設定
 	z_layer = 5;
@@ -80,6 +80,9 @@ void Player::Initialize()
 	pipe_enter = false;        //土管に入れるかどうか
 	pipe_now = false;            //土管に入っている最中か
 	old_enter_lc = 0.0f;        //土管に入る前の座標
+
+	//取得したアイテム
+	get_item = eNull;
 }
 
 void Player::Update(float delta_seconde)
@@ -131,9 +134,16 @@ void Player::Update(float delta_seconde)
 
 		case ePlayerState::get:
 			velocity = 0;
-			Levelup_Animation(delta_seconde);
-			/*Fire_Animation(delta_seconde);*/
-			/*image = levelup_animation[2];*/
+			if (get_item == eMushroom)
+			{
+				Levelup_Animation(delta_seconde);
+			}
+			else if (get_item == eFlower)
+			{
+				Fire_Animation(delta_seconde);
+			}
+			
+			
 			break;
 
 		case ePlayerState::damage:
@@ -145,10 +155,10 @@ void Player::Update(float delta_seconde)
 			break;
 		}
 	}
-	/*else if(state == die)
+	else if(state == die)
 	{
-		image = move_animation[6];
-	}*/
+		image = SmallMario_animation[6];
+	}
 	
 	if (fire_count < 2)
 	{
@@ -170,7 +180,7 @@ void Player::Update(float delta_seconde)
 	//	PowerDown_Animation(delta_seconde);
 	//}
 
-	//マリオが
+	//マリオがジャンプしているときの重力処理
 	if (is_ground == false /*&& p_state != get */&& p_state == jump)
 	{
 		g_velocity += (D_GRAVITY / 444);
@@ -479,9 +489,22 @@ void Player::OnHitCollision(GameObject* hit_object)
 		pipe_enter = true;
 	}
 
-	if (target_collision.object_type == eItem)
+	if (target_collision.item_type == eMushroom)
 	{
-		p_state = get;
+		if (p_level != Big || p_level != Fire)
+		{
+			p_state = get;
+			get_item = eMushroom;
+		}
+	}
+
+	if (target_collision.item_type == eFlower)
+	{
+		if (p_level != Fire)
+		{
+			p_state = get;
+			get_item = eFlower;
+		}
 	}
 
 }
@@ -697,6 +720,7 @@ void Player::Levelup_Animation(float delta_seconde)
 				this->location.y += 16;
 				p_state = idle;
 				p_level = Big;
+				get_item = eNull;
 			}
 		}
 
@@ -757,6 +781,7 @@ void Player::Fire_Animation(float delta_seconde)
 			level_animation_count = 0;
 			p_level = Fire;
 			p_state = idle;
+			get_item = eNull;
 		}
 	}
 }

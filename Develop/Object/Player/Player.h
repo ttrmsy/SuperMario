@@ -47,7 +47,9 @@ private:
 	bool pipe_enter;							//土管に入れるかどうか
 	bool pipe_now;								//土管に入っている最中か
 	float old_enter_lc;							//土管に入る前の座標
+	Items get_item;
 	int is_death;
+
 
 public:
 	bool jump_flag;								//ジャンプできる状態かの判定フラグ
