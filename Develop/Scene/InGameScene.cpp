@@ -287,11 +287,14 @@ void InGameScene::LoadStageMapCSV()
 					objm->CreateGameObject<Question>(generate_location)->SetItemType(eOneup);
 					x++;
 					break;
+
 				default:
+					objm->CreateGameObject<Question>(generate_location)->SetItemType(eCoin);
+					x++;
 					break;
 				}
 
-			
+				break;
 
 			case '0':
 				objm->CreateGameObject<Brick>(generate_location);

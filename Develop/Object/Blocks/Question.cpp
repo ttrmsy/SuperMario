@@ -39,7 +39,7 @@ void Question::Initialize()
 
 	hit_flag = false;
 
-
+	//create_item = eNull;
 
 }
 
@@ -110,7 +110,29 @@ void Question::OnHitCollision(GameObject* hit_object)
 			lc_handover.y -= 5.0f;
 
 			//キノコを生成する
-			gm_p->CreateGameObject<Mushroom>(lc_handover)->SetOldLocation(lc_handover);
+			switch (create_item)
+			{
+			case eNull:
+				gm_p->CreateGameObject<Coin>(lc_handover)->SetOldLocation(lc_handover);
+				break;
+			case eCoin:
+				gm_p->CreateGameObject<Coin>(lc_handover)->SetOldLocation(lc_handover);
+				break;
+			case eMushroom:
+				gm_p->CreateGameObject<Mushroom>(lc_handover)->SetOldLocation(lc_handover);
+				break;
+			case eFlower:
+				gm_p->CreateGameObject<Flower>(lc_handover)->SetOldLocation(lc_handover);
+				break;
+			case eOneup:
+				gm_p->CreateGameObject<OneUpMush>(lc_handover)->SetOldLocation(lc_handover);
+				break;
+			case eStar:
+				gm_p->CreateGameObject<Star>(lc_handover)->SetOldLocation(lc_handover);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 }
@@ -136,7 +158,7 @@ const bool Question::GetMobility() const
 
 void Question::SetItemType(Items a)
 {
-	collision.item_type = a;
+	create_item = a;
 }
 
 //アニメーション処理

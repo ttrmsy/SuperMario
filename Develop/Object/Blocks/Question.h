@@ -10,7 +10,7 @@ private:
 	float up_count;
 	float down_count;
 	bool hit_flag;
-	
+	Items create_item;
 
 public:
 	virtual void Initialize() override;
