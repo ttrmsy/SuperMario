@@ -259,7 +259,7 @@ void Player::Draw(const Vector2D& screen_offset) const
 
 	SetFontSize(15);
 	DrawFormatString(100, 100, GetColor(255, 0, 0), "Vx:%f0,Vy:%f0", velocity.x, velocity.y);
-	DrawFormatString(100, 150, GetColor(255, 0, 0), "is_ground:%d", is_ground);
+	DrawFormatString(100, 150, GetColor(255, 0, 0), "is_ground:%d", fire_count);
 	Vector2D ul = location - (collision.box_size / 2);
 	Vector2D br = location + (collision.box_size / 2);
 	DrawBoxAA(ul.x - screen_offset.x, ul.y, br.x - screen_offset.x, br.y, GetColor(255, 0, 0), FALSE);
@@ -283,12 +283,6 @@ void Player::OnHitCollision(GameObject* hit_object)
 	Vector2D target_boxsize, this_boxsize;
 	diff = 0.0f;
 
-	Vector2D p_location = 0.0f;
-	if (p_level == Big || p_level == Fire)
-	{
-		p_location.y = 16;
-	}
-
 	Vector2D target_location = hit_object->GetLocation();
 	Collision target_collision = hit_object->GetCollision();
 
@@ -299,7 +293,7 @@ void Player::OnHitCollision(GameObject* hit_object)
 	
 
 	//2点間の距離を求める
-	diff = (this->location + p_location) - target_location;
+	diff = (this->location) - target_location;
 	
 	if (target_collision.object_type != ePipeEnter && this->collision.is_blocking == true)
 	{
@@ -308,7 +302,7 @@ void Player::OnHitCollision(GameObject* hit_object)
 			if (diff.y >= 0)	//自身がHitしたオブジェクトよりも下側にいたとき
 			{
 				diff.x = (target_location.x + target_boxsize.x / 2) - (this->location.x - this_boxsize.x / 2);
-				diff.y = (target_location.y + target_boxsize.y / 2) - ((this->location.y + p_location.y) - this_boxsize.y / 2);
+				diff.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
 
 				if (diff.x > diff.y)
 				{
@@ -396,7 +390,7 @@ void Player::OnHitCollision(GameObject* hit_object)
 			if (diff.y >= 0)	//自身がHitしたオブジェクトよりも下側にいたとき
 			{
 				diff.x = (this->location.x + this_boxsize.x / 2) - (target_location.x - target_boxsize.x / 2);
-				diff.y = (target_location.y + target_boxsize.y / 2) - ((this->location.y + p_location.y) - this_boxsize.y / 2);
+				diff.y = (target_location.y + target_boxsize.y / 2) - (this->location.y - this_boxsize.y / 2);
 
 				if (diff.x <= diff.y)
 				{
